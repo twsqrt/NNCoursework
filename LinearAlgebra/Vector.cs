@@ -1,15 +1,17 @@
-﻿using System.Text;
+﻿using System.Numerics;
+using System.Text;
 
 namespace LinearAlgebra;
 
-public class Vector
+public class Vector<T>
+    where T : INumber<T>
 {
     private readonly int _length;
-    private readonly double[] _vector;
+    private readonly T[] _vector;
 
     public int Length => _length;
 
-    public double this[int index]
+    public T this[int index]
     {
         get => _vector[index];
         set => _vector[index] = value;
@@ -18,33 +20,33 @@ public class Vector
     private Vector(int length)
     {
         _length = length;
-        _vector = new double[length];
+        _vector = new T[length];
     }
 
-    public Vector(double[] vector)
+    public Vector(T[] vector)
     {
         _length = vector.Length;
         _vector = vector;
     }
 
-    public static Vector Zero(int length)
-        => new Vector(Enumerable.Range(0, length).Select(_ => 0.0).ToArray());
+    public static Vector<T> ZeroVector(int length)
+        => new Vector<T>(Enumerable.Range(0, length).Select(_ => T.Zero).ToArray());
     
-    public static Vector CreateFromFunction(int length, Func<int, double> function)
+    public static Vector<T> CreateFromFunction(int length, Func<int, T> function)
     {
-        var result = new Vector(length);
+        var result = new Vector<T>(length);
         for(int i =0; i < length; i++)
             result[i] = function(i);
           
         return result;
     }
     
-    public static double ScalarProduct(Vector lhs, Vector rhs)
+    public static T ScalarProduct(Vector<T> lhs, Vector<T> rhs)
     {
         if(lhs.Length != rhs.Length)
             throw new ArgumentException();
         
-        double result = 0.0;
+        T result = T.Zero;
         for(int i =0; i < lhs.Length; i++)
             result += lhs[i] * rhs[i];
         return result;
@@ -57,18 +59,18 @@ public class Vector
         sb.Append("[");
         for(int i =0; i < _length; i++)
             sb.Append($"{_vector[i]},\t");
-        sb.AppendLine("]");
+        sb.Append("]");
 
         return sb.ToString();
     }
 
-    public static Vector operator *(double scalar, Vector vector)
+    public static Vector<T> operator *(T scalar, Vector<T> vector)
         => CreateFromFunction(vector.Length, i => scalar * vector[i]);
 
-    public static Vector operator +(Vector vector) => vector;
-    public static Vector operator -(Vector vector) => -1.0 * vector;
+    public static Vector<T> operator +(Vector<T> vector) => vector;
+    public static Vector<T> operator -(Vector<T> vector) => - T.One * vector;
 
-    public static Vector operator +(Vector lhs, Vector rhs)
+    public static Vector<T> operator +(Vector<T> lhs, Vector<T> rhs)
     {
         if(lhs.Length != rhs.Length)
             throw new ArgumentException();
@@ -76,7 +78,7 @@ public class Vector
         return CreateFromFunction(lhs.Length, i => lhs[i] + rhs[i]);
     }
 
-    public static Vector operator -(Vector lhs, Vector rhs)
+    public static Vector<T> operator -(Vector<T> lhs, Vector<T> rhs)
     {
         if(lhs.Length != rhs.Length)
             throw new ArgumentException();
@@ -84,6 +86,6 @@ public class Vector
         return CreateFromFunction(lhs.Length, i => lhs[i] - rhs[i]);
     }
 
-    public static double operator *(Vector lhs, Vector rhs)
+    public static T operator *(Vector<T> lhs, Vector<T> rhs)
         => ScalarProduct(lhs, rhs);
 }

@@ -1,18 +1,19 @@
-using System.Reflection.PortableExecutable;
+using System.Numerics;
 using System.Text;
 
 namespace LinearAlgebra;
 
-public class Matrix
+public class Matrix<T>
+    where T : INumber<T>
 {
     private readonly (int, int) _size;
-    private readonly double[,] _matrix;
+    private readonly T[,] _matrix;
 
     public int Height => _size.Item1;
     public int Width => _size.Item2;
     public (int, int) Size => _size;
 
-    public double this[int height, int width] 
+    public T this[int height, int width] 
     {
         get => _matrix[height, width];
         set => _matrix[height, width] = value;
@@ -21,10 +22,10 @@ public class Matrix
     private Matrix(int height, int width)
     {
         _size = (height, width);
-        _matrix = new double[height, width];
+        _matrix = new T[height, width];
     }
 
-    private Matrix(int height, int width, double[][] matrix)
+    private Matrix(int height, int width, T[][] matrix)
         : this(height, width)
     {
         for(int i = 0; i < height; i++)
@@ -34,25 +35,25 @@ public class Matrix
         }
     }
 
-    public Matrix(double[,] matrix)
+    public Matrix(T[,] matrix)
     {
         _size = (matrix.GetLength(0), matrix.GetLength(1));
         _matrix = matrix;
     }
 
-    public static Matrix CreateFromFunction(int height, int width, Func<int, int, double> function) 
+    public static Matrix<T> CreateFromFunction(int height, int width, Func<int, int, T> function) 
     {
-        double[][] matrix = Enumerable.Range(0, height)
+        T[][] matrix = Enumerable.Range(0, height)
             .Select(i => Enumerable.Range(0, width).Select(j => function(i, j)).ToArray())
             .ToArray();
-        return new Matrix(height, width, matrix);
+        return new Matrix<T>(height, width, matrix);
     }
 
-    public static Matrix ZeroMatrix(int height, int width)
-        => CreateFromFunction(height, width, (_, _) => 0.0);
+    public static Matrix<T> ZeroMatrix(int height, int width)
+        => CreateFromFunction(height, width, (_, _) => T.Zero);
 
-    public static Matrix IdentityMatrix(int height, int width)
-        => CreateFromFunction(height, width, (i, j) => i == j ? 1.0 : 0.0);
+    public static Matrix<T> IdentityMatrix(int height, int width)
+        => CreateFromFunction(height, width, (i, j) => i == j ? T.One : T.Zero);
 
     public override string ToString()
     {
@@ -71,13 +72,13 @@ public class Matrix
         return sb.ToString();
     }
 
-    public static Matrix operator *(double scalar, Matrix matrix)
+    public static Matrix<T> operator *(T scalar, Matrix<T> matrix)
         => CreateFromFunction(matrix.Height, matrix.Width, (i, j) => scalar * matrix[i, j]);
     
-    public static Matrix operator +(Matrix matrix) => matrix;
-    public static Matrix operator -(Matrix matrix) => -1.0 * matrix;
+    public static Matrix<T> operator +(Matrix<T> matrix) => matrix;
+    public static Matrix<T> operator -(Matrix<T> matrix) => - T.One * matrix;
 
-    public static Matrix operator +(Matrix lhs, Matrix rhs)
+    public static Matrix<T> operator +(Matrix<T> lhs, Matrix<T> rhs)
     {
         if(lhs.Size != rhs.Size)
             throw new ArgumentException();
@@ -86,7 +87,7 @@ public class Matrix
         return CreateFromFunction(height, width, (i, j) => lhs[i, j] + rhs[i, j]);
     }
 
-    public static Matrix operator -(Matrix lhs, Matrix rhs)
+    public static Matrix<T> operator -(Matrix<T> lhs, Matrix<T> rhs)
     {
         if(lhs.Size != rhs.Size)
             throw new ArgumentException();
@@ -95,19 +96,19 @@ public class Matrix
         return CreateFromFunction(height, width, (i, j) => lhs[i, j] - rhs[i, j]);
     }
 
-    public static Matrix operator *(Matrix lhs, Matrix rhs)
+    public static Matrix<T> operator *(Matrix<T> lhs, Matrix<T> rhs)
     {
         if(lhs.Width != rhs.Height)
             throw new ArgumentException();
 
         int length = lhs.Width;
            
-        var result = new Matrix(lhs.Height, rhs.Width);
+        var result = new Matrix<T>(lhs.Height, rhs.Width);
         for(int i = 0; i < result.Height; i++)
         {
             for(int j = 0; j < result.Width; j++)
             {
-                double scalarProduct = 0.0;
+                T scalarProduct = T.Zero;
                 for(int k = 0; k < length; k++)
                     scalarProduct += lhs[i, k] * rhs[k, j];
                 result[i, j] = scalarProduct;
@@ -117,21 +118,21 @@ public class Matrix
         return result;
     }
 
-    public static Vector operator *(Matrix matrix, Vector vector)
+    public static Vector<T> operator *(Matrix<T> matrix, Vector<T> vector)
     {
         if(matrix.Width != vector.Length)
             throw new ArgumentException();
         
         int resultLength = matrix.Height;
-        var result = new double[resultLength];
+        var result = new T[resultLength];
         for(int i =0; i < resultLength; i++)
         {
-            double scalarProduct = 0.0;
+            T scalarProduct = T.Zero;
             for(int j =0; j < vector.Length; j++)
                 scalarProduct += matrix[i, j] * vector[j];
             result[i] = scalarProduct;
         }
 
-        return new Vector(result);
+        return new Vector<T>(result);
     }
 }
