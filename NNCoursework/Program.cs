@@ -1,4 +1,6 @@
-﻿using LinearAlgebra;
+﻿using System.Diagnostics;
+using LinearAlgebra;
+using NeuralNetworks.Transfer;
 
 var mat1 = new Matrix<double>(new double[,]{
     {1, 2, 3},
@@ -14,6 +16,8 @@ var mat2 = new Matrix<double>(new double[,]{
 Console.WriteLine(mat1);
 Console.WriteLine(mat2);
 
-var vec = new Vector<double>(new double[]{1, 2, 3});
+var vec = new Vector<double>(new double[]{-1, -2, 3});
 var res = mat2 * mat1 * vec;
-Console.WriteLine(res);
+TransferFunction transfer = TransferFunction.Create(TransferFunctionType.LOGSIG);
+Console.WriteLine("res: " + res);
+Console.WriteLine("trasfer res: " + transfer.Execute(res));

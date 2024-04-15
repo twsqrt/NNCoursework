@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NNCoursework", "NNCoursewor
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LinearAlgebra", "LinearAlgebra\LinearAlgebra.csproj", "{C14D0DF5-1298-4C9F-AC9D-F69C09EE3F39}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NeuralNetworks", "NeuralNetworks\NeuralNetworks.csproj", "{2F4AAEF5-C850-44BF-A6CF-58FFE8C04401}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,5 +26,9 @@ Global
 		{C14D0DF5-1298-4C9F-AC9D-F69C09EE3F39}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C14D0DF5-1298-4C9F-AC9D-F69C09EE3F39}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C14D0DF5-1298-4C9F-AC9D-F69C09EE3F39}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2F4AAEF5-C850-44BF-A6CF-58FFE8C04401}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2F4AAEF5-C850-44BF-A6CF-58FFE8C04401}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2F4AAEF5-C850-44BF-A6CF-58FFE8C04401}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2F4AAEF5-C850-44BF-A6CF-58FFE8C04401}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
