@@ -1,0 +1,86 @@
+@startuml ComputationGraph
+
+package Nodes
+{
+    interface INode
+    {
+        IReadOnlyVector<float> CalculateValue()
+        void BackpropagateNext(Matrix<float> PreviouseCachedJacobian)
+    }
+
+    IParameter --|> INode
+    interface IParameter
+    {
+        IReadOnlyVector<float> GetCurrentValue()
+        IReadOnlyVector<float> GetGradient()
+    }
+
+    Parameter --|> IParameter
+    class Parameter
+    {
+        - Vector<float> _parameterValue
+    }
+
+    BaseOperation --|> INode
+    abstract BaseOperation
+    {
+        # Vector<float> _calculatedValue
+
+        + {abstract} IReadOnlyVector<float> CalculateValue()
+        + {abstract} void BackpropagateNext(Matrix<float> CurrentJacobian)
+    }
+
+    UnaryOperation --|> BaseOperation
+    abstract UnaryOperation 
+    {
+        - INode Parameter
+
+        + {abstract} IReadOnlyMatrix<float> GetJacobian(IReadOnlyVector<float> At)
+        + {abstract} Vector<float> Function(IReadOnlyVector<float> Parameter)
+        + IReadOnlyVector<float> CalculateValue()
+        + void BackpropagateNext(Matrix<float> CurrentJacobian)
+    }
+
+    BinaryOperation --|> BaseOperation
+    abstract BinaryOperation 
+    {
+        - INode LeftParameter 
+        - INode RightParameter 
+
+        + {abstract} IReadOnlyMatrix<float> GetJacobianLeftParameter(IReadOnlyVector<float> At)
+        + {abstract} IReadOnlyMatrix<float> GetJacobianRightParameter(IReadOnlyVector<float> At)
+        + {abstract} Vector<float> Function(IReadOnlyVector<float> Left, IReadOnlyVector<float> Right)
+        + IReadOnlyVector<float> CalculateValue()
+        + void BackpropagateNext(Matrix<float> CurrentJacobian)
+    }
+
+    TransferFucntion --|> UnaryOperation
+    class TransferFucntion
+
+    Addition --|> BinaryOperation
+    class Addition 
+
+    MatrixMultiplication --|> UnaryOperation
+    MatrixMultiplication --|> IParameter
+    class MatrixMultiplication
+    {
+        - Matrix<float> _matrix
+    }
+
+}
+
+package Graph
+{
+    class ComputationGraph
+    {
+        - INode _root
+        - IParameter[] _parameter
+
+        + IReadOnlyVector<float>[] GetParametersCurrentValue()
+        + Vector<float> CalculateResult()
+        + IReadOnlyVector<float>[] CalculateGradient()
+    }
+}
+
+
+@enduml

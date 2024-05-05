@@ -1,0 +1,58 @@
+@startuml Project
+
+left to right direction
+
+interface IReadOnlyMatrix<<T : INumber>>
+{
+    T Get[int i, int j]
+    {field} (int, int) Size
+    int Width
+    int Height
+
+    IReadOnlyVector<T> GetRow(int index)
+    IReadOnlyVector<T> GetColumn(int index)
+    void ApplyToLeft(Matrix<T> Matrix)
+    void ApplyToRight(Matrix<T> Matrix)
+}
+
+IdentityMatrix --|> IReadOnlyMatrix 
+class IdentityMatrix<<T : INumber>>
+
+DiagonalMatrix --|> IReadOnlyMatrix 
+class DiagonalMatrix<<T : INumber>>
+{
+    - T _diagonalElements[]
+}
+
+Matrix --|> IReadOnlyMatrix 
+class Matrix<<T : INumber>>
+{
+    - T _data[]
+    + T Get[int i, int j]
+    + Set[int i, int j]
+
+    + {static} Matrix<T> Copy(IReadOnlyMatrix<T> Matrix)
+    + Vector<T> ToVector()
+    + Vector<T> ToVectorCached()
+}
+
+interface IReadOnlyVector<<T : INumber>>
+{
+    T Get[int i]
+    int Length
+
+    T ToNumber()
+}
+
+Vector --|> IReadOnlyVector
+class Vector<<T : INumber>>
+{
+    - T _data[]
+    + Set[int i]
+
+    + {static} Vector Copy(IReadOnlyVector Vector)
+    + Matrix<T> ToMatrix(int height, int width)
+    + Matrix<T> ToMatrixCached(int height, int width)
+}
+
+@enduml
