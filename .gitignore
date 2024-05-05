@@ -6,6 +6,9 @@
 # TextBooks
 TextBooks/
 
+# PlantUML export data
+out/UML/
+
 # User-specific files
 *.rsuser
 *.suo
