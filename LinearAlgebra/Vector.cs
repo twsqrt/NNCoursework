@@ -3,30 +3,33 @@ using System.Text;
 
 namespace LinearAlgebra;
 
-public class Vector<T>
+public class Vector<T> : IReadOnlyVector<T>
     where T : INumber<T>
 {
     private readonly int _length;
-    private readonly T[] _vector;
+    private readonly T[] _data;
 
     public int Length => _length;
 
     public T this[int index]
     {
-        get => _vector[index];
-        set => _vector[index] = value;
+        get => _data[index];
+        set => _data[index] = value;
     }
 
-    private Vector(int length)
+    public Vector(T[] data)
     {
-        _length = length;
-        _vector = new T[length];
+        _length = data.Length;
+        _data = data;
     }
 
-    public Vector(T[] vector)
+    public static Vector<T> Copy(IReadOnlyVector<T> other)
     {
-        _length = vector.Length;
-        _vector = vector;
+        var data = new T[other.Length];
+        for(int i = 0; i < other.Length; i++)
+            data[i] = other[i];
+           
+        return new Vector<T>(data);
     }
 
     public static Vector<T> ZeroVector(int length)
@@ -34,11 +37,11 @@ public class Vector<T>
     
     public static Vector<T> CreateFromFunction(int length, Func<int, T> function)
     {
-        var result = new Vector<T>(length);
+        var data = new T[length];
         for(int i =0; i < length; i++)
-            result[i] = function(i);
+            data[i] = function(i);
           
-        return result;
+        return new Vector<T>(data);
     }
     
     public static T ScalarProduct(Vector<T> lhs, Vector<T> rhs)
@@ -58,10 +61,18 @@ public class Vector<T>
 
         sb.Append("[");
         for(int i =0; i < _length; i++)
-            sb.Append($"{_vector[i]},\t");
+            sb.Append($"{_data[i]},\t");
         sb.Append("]");
 
         return sb.ToString();
+    }
+
+    public T ToNumber()
+    {
+        if(_length != 1)
+            throw new InvalidOperationException();
+          
+        return _data[0];
     }
 
     public static Vector<T> operator *(T scalar, Vector<T> vector)
