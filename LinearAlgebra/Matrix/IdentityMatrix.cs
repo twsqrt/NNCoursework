@@ -1,6 +1,6 @@
 ﻿using System.Numerics;
 
-namespace LinearAlgebra.Matrix;
+namespace LinearAlgebra;
 
 public class IdentityMatrix<T> : IReadOnlyMatrix<T>
     where T : INumber<T>

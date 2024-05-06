@@ -1,6 +1,6 @@
 ﻿using System.Numerics;
 
-namespace LinearAlgebra.Matrix;
+namespace LinearAlgebra;
 
 public class DiagonalMatrix<T> : IReadOnlyMatrix<T>
     where T : INumber<T>

@@ -2,7 +2,7 @@ using System.Globalization;
 using System.Numerics;
 using System.Text;
 
-namespace LinearAlgebra.Matrix;
+namespace LinearAlgebra;
 
 public class Matrix<T> : IReadOnlyMatrix<T>
     where T : INumber<T>

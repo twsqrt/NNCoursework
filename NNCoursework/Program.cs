@@ -1,5 +1,5 @@
 ﻿using LinearAlgebra;
-using LinearAlgebra.Matrix;
+using LinearAlgebra;
 using NeuralNetworks.Transfer;
 
 var mat1 = new Matrix<double>(3, 3, new double[] {1, 2, 3, 4, 5, 6, 7, 8, 9});
