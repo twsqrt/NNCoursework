@@ -103,6 +103,14 @@ public class Vector<T> : IReadOnlyVector<T>
         return CreateFromFunction(lhs.Length, i => lhs[i] + rhs[i]);
     }
 
+    public static Vector<T> Addition(IReadOnlyVector<T> lhs, IReadOnlyVector<T> rhs)
+    {
+        if(lhs.Length != rhs.Length)
+            throw new ArgumentException();
+        
+        return CreateFromFunction(lhs.Length, i => lhs[i] + rhs[i]);
+    }
+
     public static Vector<T> operator -(Vector<T> lhs, Vector<T> rhs)
     {
         if(lhs.Length != rhs.Length)
