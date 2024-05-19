@@ -89,6 +89,9 @@ public class Vector<T> : IReadOnlyVector<T>
         return _data[0];
     }
 
+    public IReadOnlyMatrix<T> ToMatrixCached(int height, int width)
+        => new Matrix<T>(height, width, _data);
+
     public static Vector<T> operator *(T scalar, Vector<T> vector)
         => CreateFromFunction(vector.Length, i => scalar * vector[i]);
 

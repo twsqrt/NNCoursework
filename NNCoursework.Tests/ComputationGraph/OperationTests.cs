@@ -1,4 +1,3 @@
-using System.Reflection;
 using LinearAlgebra;
 using NeuralNetworks.ComputationGraph;
 

@@ -141,4 +141,23 @@ public class Matrix<T> : IReadOnlyMatrix<T>
 
         return CreateCachedCopy(other);
     }
+
+    public Vector<T> ApplyTo(IReadOnlyVector<T> vector)
+    {
+        if(vector.Length != _width)
+            throw new ArgumentException();
+
+        var data = new T[_height];
+
+        for(int i = 0; i < _height; i++)
+        {
+            T scalarProduct = T.Zero;
+            for(int j = 0; j < vector.Length;  j++)
+                scalarProduct += vector[j] * this[i, j];
+
+            data[i] = scalarProduct;
+        }
+
+        return new Vector<T>(data);
+    }
 }

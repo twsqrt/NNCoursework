@@ -9,4 +9,6 @@ public interface IReadOnlyVector<T>
     int Length { get; }
 
     T ToNumber();
+
+    IReadOnlyMatrix<T> ToMatrixCached(int height, int width);
 }
