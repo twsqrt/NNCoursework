@@ -27,7 +27,7 @@ public class DiagonalMatrix<T> : IReadOnlyMatrix<T>
 
     public Matrix<T> MultiplyRight(IReadOnlyMatrix<T> other)
     {
-        if(_length != other.Height)
+        if(_length != other.Width)
             throw new ArgumentException();
 
         (int height, int width) = other.Size;
@@ -44,7 +44,7 @@ public class DiagonalMatrix<T> : IReadOnlyMatrix<T>
 
     public Matrix<T> MultiplyRightCached(Matrix<T> other)
     {
-        if(_length != other.Height)
+        if(_length != other.Width)
             throw new ArgumentException();
            
         (int height, int width) = other.Size;
@@ -52,7 +52,7 @@ public class DiagonalMatrix<T> : IReadOnlyMatrix<T>
         for(int i = 0; i < height; i++)
         {
             for(int j = 0; j < width; j++)
-                other[i, j] *= _diagonalElements[i];
+                other[i, j] *= _diagonalElements[j];
         }
 
         return Matrix<T>.CreateCachedCopy(other);

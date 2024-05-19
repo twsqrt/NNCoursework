@@ -33,6 +33,26 @@ public class Matrix<T> : IReadOnlyMatrix<T>
         _data = data;
     }
 
+    public static Matrix<T> ZeroMatrix(int height, int width)
+    {
+        var data = new T[height * width];
+        Array.Fill<T>(data, T.Zero);
+
+        return new Matrix<T>(height, width, data);
+    }
+
+    public static Matrix<T> IdentityMatrix(int size)
+    {
+        var data = new T[size * size];
+        for(int i = 0; i < size; i++)
+        {
+            for(int j = 0; j < size; j++)
+                data[i * size + j] = i == j ? T.One : T.Zero;
+        }
+
+        return new Matrix<T>(size, size, data);
+    }
+
     public static Matrix<T> CreateCopy(IReadOnlyMatrix<T> other)
     {
         (int height, int width) = other.Size;
@@ -72,13 +92,12 @@ public class Matrix<T> : IReadOnlyMatrix<T>
 
     public Matrix<T> MultiplyRight(IReadOnlyMatrix<T> other)
     {
-        if(_width != other.Height)
+        if(_height != other.Width)
             throw new ArgumentException();
 
-        int length = Width;
-           
-        int height = _height;
-        int width = other.Width;
+        int length = _height;
+        int height = other.Height;
+        int width = _width;
         var data = new T[height * width];
 
         for(int i = 0; i < height; i++)
@@ -87,7 +106,7 @@ public class Matrix<T> : IReadOnlyMatrix<T>
             {
                 T scalarProduct = T.Zero;
                 for(int k = 0; k < length; k++)
-                    scalarProduct += this[i, k] * other[k, j];
+                    scalarProduct += other[i, k] * this[k, j];
                 data[i * width + j] = scalarProduct;
             }
         }
@@ -97,7 +116,7 @@ public class Matrix<T> : IReadOnlyMatrix<T>
 
     public Matrix<T> MultiplyRightCached(Matrix<T> other)
     {
-        if(_width != other.Height)
+        if(_height != other.Width)
             throw new ArgumentException();
 
         if(IsSquareSize == false)
@@ -112,7 +131,7 @@ public class Matrix<T> : IReadOnlyMatrix<T>
             {
                 T scalarProduct = T.Zero;
                 for(int k = 0; k < width; k++)
-                    scalarProduct += this[i, k] * other[k, j];
+                    scalarProduct += other[i, k] * this[k, j];
                 buffer[j] = scalarProduct;
             }
 
@@ -122,5 +141,4 @@ public class Matrix<T> : IReadOnlyMatrix<T>
 
         return CreateCachedCopy(other);
     }
-
 }

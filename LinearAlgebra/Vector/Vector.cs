@@ -7,7 +7,7 @@ public class Vector<T> : IReadOnlyVector<T>
     where T : INumber<T>
 {
     private readonly int _length;
-    private readonly T[] _data;
+    private T[] _data;
 
     public int Length => _length;
 
@@ -15,6 +15,12 @@ public class Vector<T> : IReadOnlyVector<T>
     {
         get => _data[index];
         set => _data[index] = value;
+    }
+
+    public Vector(int length)
+    {
+        _length = length;
+        _data = new T[length];
     }
 
     public Vector(T[] data)
@@ -65,6 +71,14 @@ public class Vector<T> : IReadOnlyVector<T>
         sb.Append("]");
 
         return sb.ToString();
+    }
+
+    public void SetValue(IReadOnlyVector<T> value)
+    {
+        if(_length != value.Length)
+            throw new ArgumentException();
+           
+        _data = Copy(value)._data;
     }
 
     public T ToNumber()
