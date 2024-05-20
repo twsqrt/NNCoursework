@@ -7,14 +7,14 @@ public class TransferOperation : UnaryOperation
 {
     private readonly ActivationFunction _activationFunction;
 
-    public TransferOperation(Node parameter, ActivationFunction activationFunction, int dimension) 
-        : base(parameter, dimension)
+    public TransferOperation(Node parameter, ActivationFunction activationFunction) 
+    : base(parameter, parameter.Dimension)
     {
-        if(parameter.Dimension != dimension)
-            throw new ArgumentException();
-
         _activationFunction = activationFunction;
     }
+
+    public static TransferOperation Create(Node parameter, ActivationFunctionType type)
+        => new TransferOperation(parameter, ActivationFunction.Create(type));
 
     protected override Vector<float> Function(IReadOnlyVector<float> at)
         => Vector<float>.CreateFromFunction(at.Length, i => _activationFunction.Function(at[i]));
