@@ -1,7 +1,6 @@
 using LinearAlgebra;
-using NeuralNetworks.ComputationGraph;
 
-namespace NeuralNetworks;
+namespace NeuralNetworks.ComputationGraph;
 
 public class LayerOperation : Node
 {

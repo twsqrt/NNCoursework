@@ -1,5 +1,4 @@
 using LinearAlgebra;
-using NeuralNetworks;
 using NeuralNetworks.ComputationGraph;
 
 namespace NNCoursework.Tests;
