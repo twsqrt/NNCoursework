@@ -5,10 +5,10 @@ namespace NeuralNetworks.ComputationGraph;
 
 public class AdditionOperation : BinaryOperation
 {
-    public AdditionOperation(Node leftParameter, Node rightParameter, int dimension) : base(leftParameter, rightParameter, dimension)
+    public AdditionOperation(Node leftParameter, Node rightParameter) 
+    : base(leftParameter, rightParameter, leftParameter.Dimension)
     {
-        if(leftParameter.Dimension != rightParameter.Dimension
-            || leftParameter.Dimension != dimension)
+        if(leftParameter.Dimension != rightParameter.Dimension)
             throw new ArgumentException();
     }
 
@@ -16,8 +16,8 @@ public class AdditionOperation : BinaryOperation
         => Vector<float>.Addition(left, right);
 
     protected override IReadOnlyMatrix<float> LeftJacobian(IReadOnlyVector<float> left, IReadOnlyVector<float> right)
-        => new IdentityMatrix<float>(LeftParameterDimension);
+        => new CreateIdentityMatrix<float>(LeftParameterDimension);
 
     protected override IReadOnlyMatrix<float> RightJacobian(IReadOnlyVector<float> left, IReadOnlyVector<float> right)
-        => new IdentityMatrix<float>(RigthParameterDimension);
+        => new CreateIdentityMatrix<float>(RigthParameterDimension);
 }

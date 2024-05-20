@@ -4,20 +4,23 @@ namespace NeuralNetworks.ComputationGraph;
 
 public class Parameter : Node
 {
-    private Matrix<float> _currentJacobian;
+    private Matrix<float>? _currentJacobian;
 
-    public Matrix<float> CurrentJacobian => _currentJacobian;
+    public Matrix<float> CurrentJacobian 
+    {
+        get 
+        {
+            if(_currentJacobian is null)
+                throw new InvalidOperationException();
+            
+            return _currentJacobian;
+        }
+    }
 
-    private Parameter(IReadOnlyVector<float> value) : base(value)
+    public Parameter(IReadOnlyVector<float> value) : base(value)
     {
         _currentJacobian = null;
     }
-
-    public static Parameter CreateFrom(IReadOnlyVector<float> value)
-        => new Parameter(value);
-    
-    public static Parameter CreateZero(int dimension)
-        => new Parameter(Vector<float>.ZeroVector(dimension));
 
     public void SetValue(IReadOnlyVector<float> value)
     {

@@ -33,7 +33,7 @@ public class Matrix<T> : IReadOnlyMatrix<T>
         _data = data;
     }
 
-    public static Matrix<T> ZeroMatrix(int height, int width)
+    public static Matrix<T> CreateZeroMatrix(int height, int width)
     {
         var data = new T[height * width];
         Array.Fill<T>(data, T.Zero);
@@ -41,7 +41,7 @@ public class Matrix<T> : IReadOnlyMatrix<T>
         return new Matrix<T>(height, width, data);
     }
 
-    public static Matrix<T> IdentityMatrix(int size)
+    public static Matrix<T> CreateIdentityMatrix(int size)
     {
         var data = new T[size * size];
         for(int i = 0; i < size; i++)

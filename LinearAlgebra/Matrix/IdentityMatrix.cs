@@ -2,7 +2,7 @@
 
 namespace LinearAlgebra;
 
-public class IdentityMatrix<T> : IReadOnlyMatrix<T>
+public class CreateIdentityMatrix<T> : IReadOnlyMatrix<T>
     where T : INumber<T>
 {
     private readonly int _size;
@@ -18,7 +18,7 @@ public class IdentityMatrix<T> : IReadOnlyMatrix<T>
 
     public int Height => _size;
 
-    public IdentityMatrix(int size)
+    public CreateIdentityMatrix(int size)
     {
         _size = size;
     }

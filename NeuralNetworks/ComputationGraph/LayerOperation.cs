@@ -26,7 +26,7 @@ public class LayerOperation : Node
         IReadOnlyMatrix<float> weightsMatrix = _weights.CurrentValue.ToMatrixCached(_weightsWidth, _weightsWidth);
         IReadOnlyVector<float> parameterValue = _parameter.CurrentValue;
 
-        Matrix<float> weightsJacobian = Matrix<float>.ZeroMatrix(previouseJacobian.Height, _weights.Dimension);
+        Matrix<float> weightsJacobian = Matrix<float>.CreateZeroMatrix(previouseJacobian.Height, _weights.Dimension);
         for(int i = 0; i < weightsJacobian.Height; i++)
         {
             for(int j = 0; j < _weightsHeight; j++)

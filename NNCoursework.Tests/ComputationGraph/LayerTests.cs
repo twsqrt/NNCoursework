@@ -15,10 +15,10 @@ public class LayerTests
         float w22 = 1.5f;
 
         var parameterValue = new Vector<float>(new float[] { 1.0f, 2.0f});
-        var parameter = Parameter.CreateFrom(parameterValue);
+        var parameter = new Parameter(parameterValue);
 
         var weightsValue = new Vector<float>(new float[]{w11, w12, w21, w22});
-        var weights = Parameter.CreateFrom(weightsValue);
+        var weights = new Parameter(weightsValue);
 
         var layer = new LayerOperation(weights, parameter);
         var opB = new TestUnaryOperationB(layer);
@@ -39,17 +39,17 @@ public class LayerTests
         float w22 = 1.5f;
 
         var parameterValue = new Vector<float>(new float[] { 1.0f, 2.0f});
-        var parameter = Parameter.CreateFrom(parameterValue);
+        var parameter = new Parameter(parameterValue);
 
         var weightsValue = new Vector<float>(new float[]{w11, w12, w21, w22});
-        var weights = Parameter.CreateFrom(weightsValue);
+        var weights = new Parameter(weightsValue);
 
         var layer = new LayerOperation(weights, parameter);
         var opB = new TestUnaryOperationB(layer);
         var opC = new TestUnaryOperationC(opB);
 
         opC.UpdateValue();
-        opC.BackpropagateNext(Matrix<float>.IdentityMatrix(1));
+        opC.BackpropagateNext(Matrix<float>.CreateIdentityMatrix(1));
 
         float dw11 = weights.CurrentJacobian[0, 0];
         float dw12 = weights.CurrentJacobian[0, 1];
