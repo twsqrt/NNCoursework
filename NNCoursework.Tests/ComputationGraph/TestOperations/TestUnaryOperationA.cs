@@ -1,7 +1,7 @@
 using LinearAlgebra;
 using NeuralNetworks.ComputationGraph;
 
-namespace NNCoursework.Tests;
+namespace ComputationGraph.Tests;
 
 public class TestUnaryOperationA : UnaryOperation
 {

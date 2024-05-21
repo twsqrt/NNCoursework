@@ -2,7 +2,7 @@ using System.Net.Http.Headers;
 using LinearAlgebra;
 using NeuralNetworks.ComputationGraph;
 
-namespace NNCoursework.Tests;
+namespace ComputationGraph.Tests;
 
 public class TestBinaryOperationD : BinaryOperation
 {

@@ -1,7 +1,7 @@
 using LinearAlgebra;
 using NeuralNetworks.ComputationGraph;
 
-namespace NNCoursework.Tests;
+namespace ComputationGraph.Tests;
 
 [TestClass]
 public class OperationTests
@@ -45,9 +45,8 @@ public class OperationTests
         float dx = parameter.CurrentJacobian[0, 0];
         float dy = parameter.CurrentJacobian[0, 1];
 
-        float diffDx = MathF.Abs(dx - correctDx);
-        float diffDy = MathF.Abs(dy - correctDy);
-        Assert.IsTrue(diffDx < 0.0001f && diffDy < 0.0001f);
+        Assert.AreEqual(correctDx, dx, 0.0001f);
+        Assert.AreEqual(correctDy, dy, 0.0001f);
     }
 
     [TestMethod]

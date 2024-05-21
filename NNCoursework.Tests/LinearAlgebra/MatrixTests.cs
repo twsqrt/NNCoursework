@@ -1,6 +1,4 @@
-using LinearAlgebra;
-
-namespace NNCoursework.Tests;
+namespace LinearAlgebra.Tests;
 
 [TestClass]
 public class LinearAlgebraTests
@@ -25,7 +23,7 @@ public class LinearAlgebraTests
         mse /= result.Width * result.Height;
         mse = MathF.Sqrt(mse);
 
-        Assert.IsTrue(mse < 0.01f);
+        Assert.IsTrue(mse < 0.001f);
     }
 
     [TestMethod]
@@ -48,7 +46,7 @@ public class LinearAlgebraTests
         mse /= result.Width * result.Height;
         mse = MathF.Sqrt(mse);
 
-        Assert.IsTrue(mse < 0.01f);
+        Assert.IsTrue(mse < 0.001f);
     }
 
     [TestMethod]
@@ -71,7 +69,7 @@ public class LinearAlgebraTests
         mse /= result.Width * result.Height;
         mse = MathF.Sqrt(mse);
 
-        Assert.IsTrue(mse < 0.01f);
+        Assert.IsTrue(mse < 0.001f);
     }
 
     [TestMethod]
@@ -94,7 +92,7 @@ public class LinearAlgebraTests
         mse /= result.Width * result.Height;
         mse = MathF.Sqrt(mse);
 
-        Assert.IsTrue(mse < 0.01f);
+        Assert.IsTrue(mse < 0.001f);
     }
 
     [TestMethod]
@@ -117,6 +115,6 @@ public class LinearAlgebraTests
         mse /= result.Width * result.Height;
         mse = MathF.Sqrt(mse);
 
-        Assert.IsTrue(mse < 0.01f);
+        Assert.IsTrue(mse < 0.001f);
     }
 }

@@ -1,7 +1,7 @@
 using LinearAlgebra;
 using NeuralNetworks.ComputationGraph;
 
-namespace NNCoursework.Tests;
+namespace ComputationGraph.Tests;
 
 [TestClass]
 public class LayerTests
@@ -14,11 +14,8 @@ public class LayerTests
         float w21 = -1.0f;
         float w22 = 1.5f;
 
-        var parameterValue = new Vector<float>(new float[] { 1.0f, 2.0f});
-        var parameter = new Parameter(parameterValue);
-
-        var weightsValue = new Vector<float>(new float[]{w11, w12, w21, w22});
-        var weights = new Parameter(weightsValue);
+        var parameter = ParameterFactory.CreateFromData(new float[] { 1.0f, 2.0f});
+        var weights = ParameterFactory.CreateFromData(new float[]{w11, w12, w21, w22});
 
         var layer = new LayerOperation(weights, parameter);
         var opB = new TestUnaryOperationB(layer);
@@ -38,11 +35,8 @@ public class LayerTests
         float w21 = -1.0f;
         float w22 = 1.5f;
 
-        var parameterValue = new Vector<float>(new float[] { 1.0f, 2.0f});
-        var parameter = new Parameter(parameterValue);
-
-        var weightsValue = new Vector<float>(new float[]{w11, w12, w21, w22});
-        var weights = new Parameter(weightsValue);
+        var parameter = ParameterFactory.CreateFromData(new float[] { 1.0f, 2.0f});
+        var weights = ParameterFactory.CreateFromData(new float[]{w11, w12, w21, w22});
 
         var layer = new LayerOperation(weights, parameter);
         var opB = new TestUnaryOperationB(layer);
