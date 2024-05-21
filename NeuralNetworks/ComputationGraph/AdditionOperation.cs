@@ -13,7 +13,7 @@ public class AdditionOperation : BinaryOperation
     }
 
     protected override Vector<float> Function(IReadOnlyVector<float> left, IReadOnlyVector<float> right)
-        => Vector<float>.Addition(left, right);
+        => Vector<float>.Sum(left, right);
 
     protected override IReadOnlyMatrix<float> LeftJacobian(IReadOnlyVector<float> left, IReadOnlyVector<float> right)
         => new CreateIdentityMatrix<float>(LeftParameterDimension);

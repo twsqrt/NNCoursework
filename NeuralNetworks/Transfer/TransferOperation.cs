@@ -17,7 +17,7 @@ public class TransferOperation : UnaryOperation
         => new TransferOperation(parameter, ActivationFunction.Create(type));
 
     protected override Vector<float> Function(IReadOnlyVector<float> at)
-        => Vector<float>.CreateFromFunction(at.Length, i => _activationFunction.Function(at[i]));
+        => Vector<float>.CreateFromFunction(at.Dimension, i => _activationFunction.Function(at[i]));
 
     protected override IReadOnlyMatrix<float> Jacobian(IReadOnlyVector<float> at)
     {

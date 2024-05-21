@@ -6,7 +6,9 @@ public interface IReadOnlyVector<T>
     where T : INumber<T>
 {
     T this[int index] { get; }
-    int Length { get; }
+    int Dimension { get; }
+
+    T LengthSquared { get; }
 
     T ToNumber();
 

@@ -12,7 +12,7 @@ public abstract class Node
 
     public Node(IReadOnlyVector<float> value)
     {
-        _dimension = value.Length;
+        _dimension = value.Dimension;
         _currentValue = Vector<float>.Copy(value);
     }
 

@@ -144,7 +144,7 @@ public class Matrix<T> : IReadOnlyMatrix<T>
 
     public Vector<T> ApplyTo(IReadOnlyVector<T> vector)
     {
-        if(vector.Length != _width)
+        if(vector.Dimension != _width)
             throw new ArgumentException();
 
         var data = new T[_height];
@@ -152,7 +152,7 @@ public class Matrix<T> : IReadOnlyMatrix<T>
         for(int i = 0; i < _height; i++)
         {
             T scalarProduct = T.Zero;
-            for(int j = 0; j < vector.Length;  j++)
+            for(int j = 0; j < vector.Dimension;  j++)
                 scalarProduct += vector[j] * this[i, j];
 
             data[i] = scalarProduct;

@@ -60,11 +60,11 @@ public class DiagonalMatrix<T> : IReadOnlyMatrix<T>
 
     public Vector<T> ApplyTo(IReadOnlyVector<T> vector)
     {
-        if(vector.Length != _length)
+        if(vector.Dimension != _length)
             throw new ArgumentException();
 
-        var data = new T[vector.Length];
-        for(int i = 0; i < vector.Length; i++)
+        var data = new T[vector.Dimension];
+        for(int i = 0; i < vector.Dimension; i++)
             data[i] = _diagonalElements[i] * vector[i];
 
         return new Vector<T>(data);
