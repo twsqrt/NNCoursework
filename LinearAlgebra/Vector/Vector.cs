@@ -99,6 +99,15 @@ public class Vector<T> : IReadOnlyVector<T>
         _data = Copy(value)._data;
     }
 
+    public void Substract(IReadOnlyVector<T> value)
+    {
+        if(value.Dimension != _dimension)
+            throw new ArgumentException();
+
+        for(int i = 0; i < _dimension; i++)
+            _data[i] -= value[i];
+    }
+
     public T ToNumber()
     {
         if(_dimension != 1)

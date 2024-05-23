@@ -43,7 +43,7 @@ public class LayerTests
         var opC = new TestUnaryOperationC(opB);
 
         opC.UpdateValue();
-        opC.BackpropagateNext(Matrix<float>.CreateIdentityMatrix(1));
+        opC.Backpropagate();
 
         float dw11 = weights.CurrentJacobian[0, 0];
         float dw12 = weights.CurrentJacobian[0, 1];

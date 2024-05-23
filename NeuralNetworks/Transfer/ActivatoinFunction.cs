@@ -42,6 +42,7 @@ public struct ActivationFunction
     public static ActivationFunction Create(ActivationFunctionType functionType)
     => functionType switch
     {
+        ActivationFunctionType.PURELIN => new ActivationFunction(x => x, x => 1.0f),
         ActivationFunctionType.SATLINS => CreateSatLins(),
         ActivationFunctionType.POSLIN => CreatePosLin(),
         ActivationFunctionType.LOGSIG => CreateLogSigmoid(),

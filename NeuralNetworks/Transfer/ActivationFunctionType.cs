@@ -2,6 +2,7 @@
 
 public enum ActivationFunctionType
 {
+    PURELIN,
     SATLINS,
     POSLIN,
     LOGSIG

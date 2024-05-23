@@ -23,7 +23,7 @@ public class TransferOperation : UnaryOperation
     {
         var diagonalElements = new float[Dimension];
         for(int i = 0; i < Dimension; i++)
-            diagonalElements[i] = _activationFunction.Function(at[i]);
+            diagonalElements[i] = _activationFunction.Derivative(at[i]);
         
         return new DiagonalMatrix<float>(diagonalElements);
     }

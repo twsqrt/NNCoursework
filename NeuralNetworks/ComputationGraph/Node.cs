@@ -25,4 +25,7 @@ public abstract class Node
     public abstract void BackpropagateNext(Matrix<float> previouseJacobian);
 
     public abstract IReadOnlyVector<float> UpdateValue();
+
+    public void Backpropagate()
+        => BackpropagateNext(Matrix<float>.CreateIdentityMatrix(_dimension));
 }

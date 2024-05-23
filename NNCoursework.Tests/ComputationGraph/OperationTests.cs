@@ -37,7 +37,7 @@ public class OperationTests
         var opC = new TestUnaryOperationC(opB);
 
         opC.UpdateValue();
-        opC.BackpropagateNext(Matrix<float>.CreateIdentityMatrix(1));
+        opC.Backpropagate();
 
         float correctDx = y + y * MathF.Cos(x * y + 1.0f) + x / MathF.Sqrt(x * x + y * y);
         float correctDy = x + x * MathF.Cos(x * y + 1.0f) + y / MathF.Sqrt(x * x + y * y);
@@ -91,7 +91,7 @@ public class OperationTests
         var opC = new TestUnaryOperationC(opB);
 
         opC.UpdateValue();
-        opC.BackpropagateNext(Matrix<float>.CreateIdentityMatrix(1));
+        opC.Backpropagate();
 
         float dx1 = x.CurrentJacobian[0, 0];
         float dx2 = x.CurrentJacobian[0, 1];
@@ -144,7 +144,7 @@ public class OperationTests
         var opC = new TestUnaryOperationC(opD);
 
         opC.UpdateValue();
-        opC.BackpropagateNext(Matrix<float>.CreateIdentityMatrix(1));
+        opC.Backpropagate();
 
         float dy1 = y.CurrentJacobian[0, 0];
         float dy2 = y.CurrentJacobian[0, 1];
