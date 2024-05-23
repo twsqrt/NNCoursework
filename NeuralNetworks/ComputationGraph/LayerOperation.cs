@@ -23,7 +23,7 @@ public class LayerOperation : Node
 
     public override void BackpropagateNext(Matrix<float> previouseJacobian)
     {
-        IReadOnlyMatrix<float> weightsMatrix = _weights.CurrentValue.ToMatrixCached(_weightsWidth, _weightsWidth);
+        IReadOnlyMatrix<float> weightsMatrix = _weights.CurrentValue.ToMatrixCached(_weightsHeight, _weightsWidth);
         IReadOnlyVector<float> parameterValue = _parameter.CurrentValue;
 
         Matrix<float> weightsJacobian = Matrix<float>.CreateZeroMatrix(previouseJacobian.Height, _weights.Dimension);

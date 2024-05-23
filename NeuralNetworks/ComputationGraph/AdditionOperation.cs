@@ -16,8 +16,8 @@ public class AdditionOperation : BinaryOperation
         => Vector<float>.Sum(left, right);
 
     protected override IReadOnlyMatrix<float> LeftJacobian(IReadOnlyVector<float> left, IReadOnlyVector<float> right)
-        => new CreateIdentityMatrix<float>(LeftParameterDimension);
+        => new IdentityMatrix<float>(LeftParameterDimension);
 
     protected override IReadOnlyMatrix<float> RightJacobian(IReadOnlyVector<float> left, IReadOnlyVector<float> right)
-        => new CreateIdentityMatrix<float>(RigthParameterDimension);
+        => new IdentityMatrix<float>(RigthParameterDimension);
 }
