@@ -8,6 +8,7 @@ public class LayerNode : Node
     private readonly Node _weights;
     private readonly Matrix<float> _weightsMatrix;
     private readonly Matrix<float> _weightsCachedJacobian;
+    private readonly Matrix<float> _childCachedJacobian;
     private Vector<float> _childValue;
 
     public LayerNode(Node weights, Node child, int graphRootDimension) : base(weights.Dimension / child.Dimension)
@@ -17,8 +18,11 @@ public class LayerNode : Node
         
         _child = child;
         _weights = weights;
+
         _weightsMatrix = Matrix<float>.CreateZeroMatrix(Dimension, child.Dimension);
+
         _weightsCachedJacobian = Matrix<float>.CreateZeroMatrix(graphRootDimension, weights.Dimension);
+        _childCachedJacobian = Matrix<float>.CreateZeroMatrix(graphRootDimension, child.Dimension);
 
         _childValue = null;
     }
@@ -37,8 +41,8 @@ public class LayerNode : Node
 
         _weights.BackpropagateNext(_weightsCachedJacobian);
 
-        Matrix<float> childJacobian = _weightsMatrix.MultiplyRightCached(previouseJacobian);
-        _child.BackpropagateNext(childJacobian);
+        Matrix<float>.Multiply(previouseJacobian, _weightsMatrix, _childCachedJacobian);
+        _child.BackpropagateNext(_childCachedJacobian);
     }
 
     public override Vector<float> CalculateValue()

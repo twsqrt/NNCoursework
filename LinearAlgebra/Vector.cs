@@ -68,7 +68,7 @@ public class Vector<T>
         return _data[0];
     }
 
-    public Matrix<T> As1DMatrix()
+    public Matrix<T> AsHorizontalMatrix()
         => new Matrix<T>(1, _dimension, _data);
 
     public static Vector<T> operator +(Vector<T> lhs, Vector<T> rhs)

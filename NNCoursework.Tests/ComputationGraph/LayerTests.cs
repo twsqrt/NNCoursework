@@ -18,8 +18,8 @@ public class LayerTests
         var weights = ParameterNode.CreateFromArray(new float[]{w11, w12, w21, w22});
 
         var layer = new LayerNode(weights, parameter, 1);
-        var opB = new TestUnaryOperationB(layer);
-        var opC = new TestUnaryOperationC(opB);
+        var opB = new TestUnaryOperationB(layer, 1);
+        var opC = new TestUnaryOperationC(opB, 1);
 
         var result = opC.CalculateValue().ToNumber();
 
@@ -39,8 +39,8 @@ public class LayerTests
         var weights = ParameterNode.CreateFromArray(new float[]{w11, w12, w21, w22});
 
         var layer = new LayerNode(weights, parameter, 1);
-        var opB = new TestUnaryOperationB(layer);
-        var opC = new TestUnaryOperationC(opB);
+        var opB = new TestUnaryOperationB(layer, 1);
+        var opC = new TestUnaryOperationC(opB, 1);
 
         opC.CalculateValue();
         opC.Backpropagate();

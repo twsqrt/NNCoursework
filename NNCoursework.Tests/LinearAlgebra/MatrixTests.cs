@@ -94,27 +94,4 @@ public class LinearAlgebraTests
 
         Assert.IsTrue(mse < 0.001f);
     }
-
-    [TestMethod]
-    public void MatrixCachedMultiplication_DiagonalFloatMatrix_CorrectValue()
-    {
-        var mat1 = new Matrix<float>(3, 4, new float[] {-1, 0.5f, 2, 0.22f, 1, 0, 3, -1, 1.001f, -9999, 0.001f, -2});
-        var mat2 = new DiagonalMatrix<float>(new float[] {0.12f, 1, -2.23f, 9999f});
-        var correctResult = new Matrix<float>(3, 4, new float[] {-0.12f, 0.5f, -4.46f, 2199.78f, 0.12f, 0, -6.69f, -9999f, 0.12012f, -9999, -0.00223f, -19998f});
-
-        Matrix<float> result = mat2.MultiplyRightCached(mat1);
-        float mse = 0.0f;
-        for(int i = 0; i < result.Height; i++)
-        {
-            for(int j = 0; j < result.Width; j++)
-            {
-                float diff = correctResult[i, j] - result[i, j];
-                mse += diff * diff;
-            }
-        }
-        mse /= result.Width * result.Height;
-        mse = MathF.Sqrt(mse);
-
-        Assert.IsTrue(mse < 0.001f);
-    }
 }

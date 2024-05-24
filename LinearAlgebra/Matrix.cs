@@ -54,56 +54,31 @@ public class Matrix<T>
     public Vector<T> AsVector()
         => new Vector<T>(_data);
 
-    public Matrix<T> MultiplyRight(Matrix<T> other)
+    public void CopyValuesFrom(Matrix<T> other)
     {
-        if(_height != other.Width)
-            throw new ArgumentException();
-
-        int length = _height;
-        int height = other.Height;
-        int width = _width;
-        var data = new T[height * width];
-
-        for(int i = 0; i < height; i++)
-        {
-            for(int j = 0; j < width; j++)
-            {
-                T scalarProduct = T.Zero;
-                for(int k = 0; k < length; k++)
-                    scalarProduct += other[i, k] * this[k, j];
-                data[i * width + j] = scalarProduct;
-            }
-        }
-
-        return new Matrix<T>(height, width, data);
+        for(int i = 0; i < _data.Length; i++)
+            _data[i] = other._data[i];
     }
 
-    public Matrix<T> MultiplyRightCached(Matrix<T> other)
+    public void CopyValuesFrom(Vector<T> other)
     {
-        if(_height != other.Width)
-            throw new ArgumentException();
+        for(int i = 0; i < _data.Length; i++)
+            _data[i] = other[i];
+    }
 
-        if(IsSquareSize == false)
-            return MultiplyRight(other);
-           
-        (int height, int width) = other.Size;
-        var buffer = new T[other.Width];
-
-        for(int i = 0; i < height; i++)
+    public static void Multiply(Matrix<T> lhs, Matrix<T> rhs, Matrix<T> result)
+    {
+        for(int i = 0; i < lhs.Height; i++)
         {
-            for(int j = 0; j < width; j++)
+            for(int j = 0; j < rhs.Width; j++)
             {
-                T scalarProduct = T.Zero;
-                for(int k = 0; k < width; k++)
-                    scalarProduct += other[i, k] * this[k, j];
-                buffer[j] = scalarProduct;
+                T sum = T.Zero;
+                for(int k = 0; k < lhs.Width; k++)
+                    sum += lhs[i, k] * rhs[k, j];
+                
+                result[i, j] = sum;
             }
-
-            for(int j = 0; j < width; j++)
-                other[i, j] = buffer[j];
         }
-
-        return other;
     }
 
     public Vector<T> ApplyTo(Vector<T> vector)
@@ -123,17 +98,5 @@ public class Matrix<T>
         }
 
         return new Vector<T>(data);
-    }
-
-    public void CopyValuesFrom(Matrix<T> other)
-    {
-        for(int i = 0; i < _data.Length; i++)
-            _data[i] = other._data[i];
-    }
-
-    public void CopyValuesFrom(Vector<T> other)
-    {
-        for(int i = 0; i < _data.Length; i++)
-            _data[i] = other[i];
     }
 }

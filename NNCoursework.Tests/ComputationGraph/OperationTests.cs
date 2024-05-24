@@ -14,9 +14,9 @@ public class OperationTests
 
         ParameterNode parameter = ParameterNode.CreateFromArray(new float[] {x, y});
 
-        var opA = new TestUnaryOperationA(parameter);
-        var opB = new TestUnaryOperationB(opA);
-        var opC = new TestUnaryOperationC(opB);
+        var opA = new TestUnaryOperationA(parameter, 1);
+        var opB = new TestUnaryOperationB(opA, 1);
+        var opC = new TestUnaryOperationC(opB, 1);
 
         var result = opC.CalculateValue().ToNumber();
 
@@ -32,9 +32,9 @@ public class OperationTests
 
         ParameterNode parameter = ParameterNode.CreateFromArray(new float[] {x, y});
 
-        var opA = new TestUnaryOperationA(parameter);
-        var opB = new TestUnaryOperationB(opA);
-        var opC = new TestUnaryOperationC(opB);
+        var opA = new TestUnaryOperationA(parameter, 1);
+        var opB = new TestUnaryOperationB(opA, 1);
+        var opC = new TestUnaryOperationC(opB, 1);
 
         opC.CalculateValue();
         opC.Backpropagate();
@@ -60,10 +60,10 @@ public class OperationTests
         ParameterNode x = ParameterNode.CreateFromArray(new float[] {x1, x2});
         ParameterNode y = ParameterNode.CreateFromArray(new float[] {y1, y2});
 
-        var opA = new TestUnaryOperationA(y);
+        var opA = new TestUnaryOperationA(y, 1);
         var add = new AdditionNode(opA, x, 1);
-        var opB = new TestUnaryOperationB(add);
-        var opC = new TestUnaryOperationC(opB);
+        var opB = new TestUnaryOperationB(add, 1);
+        var opC = new TestUnaryOperationC(opB, 1);
 
         var result = opC.CalculateValue().ToNumber();
         
@@ -82,10 +82,10 @@ public class OperationTests
         ParameterNode x = ParameterNode.CreateFromArray(new float[] {x1, x2});
         ParameterNode y = ParameterNode.CreateFromArray(new float[] {y1, y2});
 
-        var opA = new TestUnaryOperationA(y);
+        var opA = new TestUnaryOperationA(y, 1);
         var add = new AdditionNode(opA, x, 1);
-        var opB = new TestUnaryOperationB(add);
-        var opC = new TestUnaryOperationC(opB);
+        var opB = new TestUnaryOperationB(add, 1);
+        var opC = new TestUnaryOperationC(opB, 1);
 
         opC.CalculateValue();
         opC.Backpropagate();
@@ -118,7 +118,7 @@ public class OperationTests
         ParameterNode y = ParameterNode.CreateFromArray(new float[] {y1, y2, y3});
 
         var opD = new TestBinaryOperationD(y, x, 1);
-        var opC = new TestUnaryOperationC(opD);
+        var opC = new TestUnaryOperationC(opD, 1);
 
         var result = opC.CalculateValue().ToNumber();
 
@@ -138,7 +138,7 @@ public class OperationTests
         ParameterNode y = ParameterNode.CreateFromArray(new float[] {y1, y2, y3});
 
         var opD = new TestBinaryOperationD(y, x, 1);
-        var opC = new TestUnaryOperationC(opD);
+        var opC = new TestUnaryOperationC(opD, 1);
 
         opC.CalculateValue();
         opC.Backpropagate();

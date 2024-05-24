@@ -5,7 +5,7 @@ namespace ComputationGraph.Tests;
 
 public class TestUnaryOperationB : UnaryOperationNode
 {
-    public TestUnaryOperationB(Node child) : base(child, 2)
+    public TestUnaryOperationB(Node child, int graphRootDimension) : base(child, 2, graphRootDimension)
     {
         if(child.Dimension != 2)
             throw new ArgumentException();

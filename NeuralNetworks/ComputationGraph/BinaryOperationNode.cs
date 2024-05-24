@@ -6,6 +6,7 @@ public abstract class BinaryOperationNode : Node
 {
     private readonly Node _lhs;
     private readonly Node _rhs;
+    private readonly Matrix<float> _lhsCachedJacobian;
     private readonly Matrix<float> _rhsCachedJacobian;
     private Vector<float> _lhsValue;
     private Vector<float> _rhsValue;
@@ -16,7 +17,8 @@ public abstract class BinaryOperationNode : Node
         _lhs = lhs;
         _rhs = rhs;
 
-        _rhsCachedJacobian = Matrix<float>.CreateZeroMatrix(graphRootDimension, Dimension);
+        _lhsCachedJacobian = Matrix<float>.CreateZeroMatrix(graphRootDimension, lhs.Dimension);
+        _rhsCachedJacobian = Matrix<float>.CreateZeroMatrix(graphRootDimension, rhs.Dimension);
 
         _lhsValue = null;
         _rhsValue = null;
@@ -28,10 +30,11 @@ public abstract class BinaryOperationNode : Node
 
     public override void BackpropagateNext(Matrix<float> previouseJacobian)
     {
-        _rhsCachedJacobian.CopyValuesFrom(previouseJacobian);
+        Matrix<float>.Multiply(previouseJacobian, GetLeftJacobian(_lhsValue, _rhsValue), _lhsCachedJacobian);
+        Matrix<float>.Multiply(previouseJacobian, GetRightJacobian(_lhsValue, _rhsValue), _rhsCachedJacobian);
 
-        _lhs.BackpropagateNext(GetLeftJacobian(_lhsValue, _rhsValue).MultiplyRightCached(previouseJacobian));
-        _rhs.BackpropagateNext(GetRightJacobian(_lhsValue, _rhsValue).MultiplyRightCached(_rhsCachedJacobian));
+        _lhs.BackpropagateNext(_lhsCachedJacobian);
+        _rhs.BackpropagateNext(_rhsCachedJacobian);;
     }
 
     public override Vector<float> CalculateValue()
