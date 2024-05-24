@@ -1,5 +1,4 @@
 ﻿using LinearAlgebra;
-using NeuralNetworks;
 using NeuralNetworks.Network;
 using NeuralNetworks.Transfer;
 
@@ -11,14 +10,10 @@ Network network = builder.Create()
     .ToLayer(10)
     .WithTransferFunction(ActivationType.LOGSIG)
     .ToLayer(1)
-    .WithTransferFunction(ActivationType.PURELIN)
     .ToOutput()
     .Build();
 
-
-
 float f(float x) => MathF.Cos(3.0f * MathF.Exp(2.0f * x) * MathF.Cos(2.0f * x));
-//float f(float x) => 2.0f * x -1.0f;
 
 const int DATA_SIZE = 200;
 

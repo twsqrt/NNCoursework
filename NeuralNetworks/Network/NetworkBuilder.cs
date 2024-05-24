@@ -10,8 +10,8 @@ public interface ISpecifyInput
 
 public interface ISpecifyLayer
 {
-    ISpecifyTransferFunction ToLayer(int numberOfNeurons);
-    ISpecifyTransferFunction ToLayerWithoutBias(int numberOfNeurons);
+    ISpecifyTransferFunctionOrOutput ToLayer(int numberOfNeurons);
+    ISpecifyTransferFunctionOrOutput ToLayerWithoutBias(int numberOfNeurons);
 }
 
 public interface ISpecifyTransferFunction
@@ -19,10 +19,16 @@ public interface ISpecifyTransferFunction
     ISpecifyNextLayerOrOutput WithTransferFunction(ActivationType type);
 }
 
-public interface ISpecifyNextLayerOrOutput : ISpecifyLayer
+public interface ISpecifyOutput
 {
     IBuild ToOutput();
 }
+
+public interface ISpecifyNextLayerOrOutput 
+    : ISpecifyLayer, ISpecifyOutput {}
+
+public interface ISpecifyTransferFunctionOrOutput 
+    : ISpecifyTransferFunction, ISpecifyOutput {}
 
 public interface IBuild
 {
@@ -32,7 +38,7 @@ public interface IBuild
 public class NetworkBuilder
 {
     private class Iner
-    : ISpecifyInput, ISpecifyNextLayerOrOutput, ISpecifyTransferFunction, IBuild
+    : ISpecifyInput, ISpecifyNextLayerOrOutput, ISpecifyTransferFunctionOrOutput, IBuild
     {
         private readonly List<ParameterNode> _parameters;
         private ParameterNode _input;
@@ -54,7 +60,7 @@ public class NetworkBuilder
             return network;
         }
 
-        public ISpecifyTransferFunction ToLayerWithoutBias(int numberOfNeurons)
+        public ISpecifyTransferFunctionOrOutput ToLayerWithoutBias(int numberOfNeurons)
         {
             ParameterNode weights = ParameterNode.CreateRandom(numberOfNeurons * _currentRoot.Dimension);
             var layer = new LayerNode(weights, _currentRoot, 1);
@@ -74,7 +80,7 @@ public class NetworkBuilder
             _parameters.Add(bias);
         }
 
-        public ISpecifyTransferFunction ToLayer(int numberOfNeurons)
+        public ISpecifyTransferFunctionOrOutput ToLayer(int numberOfNeurons)
         {
             ToLayerWithoutBias(numberOfNeurons);
             AddBias(numberOfNeurons);
