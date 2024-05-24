@@ -46,6 +46,12 @@ public class Vector<T>
             _data[i] += vector[i];
     }
 
+    public void SetZero()
+    {
+        for(int i = 0; i <_dimension; i++)
+            _data[i] = T.Zero;
+    }
+
     public Vector<T> Scale(T value)
     {
         for(int i = 0; i < _dimension; i++)

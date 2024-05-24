@@ -1,17 +1,7 @@
 ﻿using LinearAlgebra;
+using NeuralNetworks;
 using NeuralNetworks.Network;
 using NeuralNetworks.Transfer;
-
-var builder = new NetworkBuilder();
-Network network = builder.Create()
-    .WithInput(1)
-    .ToLayer(10)
-    .WithTransferFunction(ActivationType.LOGSIG)
-    .ToLayer(10)
-    .WithTransferFunction(ActivationType.LOGSIG)
-    .ToLayer(1)
-    .ToOutput()
-    .Build();
 
 float f(float x) => MathF.Cos(3.0f * MathF.Exp(2.0f * x) * MathF.Cos(2.0f * x));
 
@@ -31,7 +21,21 @@ for(int i = 0; i < DATA_SIZE; i++)
     markup[i] = Vector<float>.Create1DVector(y);
 }
 
-network.Fit(data, markup, 2000000, 0.1f);
+var builder = new NetworkBuilder();
+Network network = builder.Create()
+    .WithInput(1)
+    .ToLayer(3)
+    .WithActivationFunction(ActivationType.LOGSIG)
+    .ToLayer(10)
+    .WithActivationFunction(ActivationType.LOGSIG)
+    .ToLayer(1)
+    .ToOutput()
+    .Build();
+
+//var sgdMethod = new RegularSGD(0.05f);
+var sgdMethod = new RMSprop(0.9f, 0.05f);
+
+network.Fit(data, markup, 5, 300000, sgdMethod, Console.Out);
 
 string docPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
 

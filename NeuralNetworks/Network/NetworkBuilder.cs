@@ -10,13 +10,13 @@ public interface ISpecifyInput
 
 public interface ISpecifyLayer
 {
-    ISpecifyTransferFunctionOrOutput ToLayer(int numberOfNeurons);
-    ISpecifyTransferFunctionOrOutput ToLayerWithoutBias(int numberOfNeurons);
+    ISpecifyActivationFunctionOrOutput ToLayer(int numberOfNeurons);
+    ISpecifyActivationFunctionOrOutput ToLayerWithoutBias(int numberOfNeurons);
 }
 
-public interface ISpecifyTransferFunction
+public interface ISpecifyActivationFunction
 {
-    ISpecifyNextLayerOrOutput WithTransferFunction(ActivationType type);
+    ISpecifyNextLayerOrOutput WithActivationFunction(ActivationType type);
 }
 
 public interface ISpecifyOutput
@@ -27,8 +27,8 @@ public interface ISpecifyOutput
 public interface ISpecifyNextLayerOrOutput 
     : ISpecifyLayer, ISpecifyOutput {}
 
-public interface ISpecifyTransferFunctionOrOutput 
-    : ISpecifyTransferFunction, ISpecifyOutput {}
+public interface ISpecifyActivationFunctionOrOutput 
+    : ISpecifyActivationFunction, ISpecifyOutput {}
 
 public interface IBuild
 {
@@ -38,7 +38,7 @@ public interface IBuild
 public class NetworkBuilder
 {
     private class Iner
-    : ISpecifyInput, ISpecifyNextLayerOrOutput, ISpecifyTransferFunctionOrOutput, IBuild
+    : ISpecifyInput, ISpecifyNextLayerOrOutput, ISpecifyActivationFunctionOrOutput, IBuild
     {
         private readonly List<ParameterNode> _parameters;
         private ParameterNode _input;
@@ -60,7 +60,7 @@ public class NetworkBuilder
             return network;
         }
 
-        public ISpecifyTransferFunctionOrOutput ToLayerWithoutBias(int numberOfNeurons)
+        public ISpecifyActivationFunctionOrOutput ToLayerWithoutBias(int numberOfNeurons)
         {
             ParameterNode weights = ParameterNode.CreateRandom(numberOfNeurons * _currentRoot.Dimension);
             var layer = new LayerNode(weights, _currentRoot, 1);
@@ -80,7 +80,7 @@ public class NetworkBuilder
             _parameters.Add(bias);
         }
 
-        public ISpecifyTransferFunctionOrOutput ToLayer(int numberOfNeurons)
+        public ISpecifyActivationFunctionOrOutput ToLayer(int numberOfNeurons)
         {
             ToLayerWithoutBias(numberOfNeurons);
             AddBias(numberOfNeurons);
@@ -98,7 +98,7 @@ public class NetworkBuilder
             return this;
         }
 
-        public ISpecifyNextLayerOrOutput WithTransferFunction(ActivationType type)
+        public ISpecifyNextLayerOrOutput WithActivationFunction(ActivationType type)
         {
             ActivationNode transfer = ActivationNode.Create(_currentRoot, type);
             _currentRoot = transfer;
