@@ -1,9 +1,8 @@
 ﻿using System.Numerics;
-using System.Text;
 
 namespace LinearAlgebra;
 
-public class Vector<T> : IReadOnlyVector<T>
+public class Vector<T>
     where T : INumber<T>
 {
     private readonly int _dimension;
@@ -41,7 +40,7 @@ public class Vector<T> : IReadOnlyVector<T>
     public static Vector<T> Create1DVector(T value)
         => new Vector<T>(new T[] {value});
 
-    public void Add(IReadOnlyVector<T> vector)
+    public void Add(Vector<T> vector)
     {
         for(int i = 0; i < _dimension; i++)
             _data[i] += vector[i];

@@ -1,10 +1,8 @@
-using System.Globalization;
 using System.Numerics;
-using System.Text;
 
 namespace LinearAlgebra;
 
-public class Matrix<T> : IReadOnlyMatrix<T>
+public class Matrix<T>
     where T : INumber<T>
 {
     private readonly int _height;
@@ -53,27 +51,10 @@ public class Matrix<T> : IReadOnlyMatrix<T>
         return new Matrix<T>(size, size, data);
     }
 
-    public static Matrix<T> CreateCopy(IReadOnlyMatrix<T> other)
-    {
-        (int height, int width) = other.Size;
-        var data = new T[height * width];
-
-        for(int i = 0; i < height; i++)
-        {
-            for(int j = 0; j < width; j++)
-                data[i * width + j] = other[i, j];
-        }
-
-        return new Matrix<T>(height, width, data);
-    }
-
-    public static Matrix<T> CreateCachedCopy(Matrix<T> other) 
-        => new Matrix<T>(other.Height, other.Width, other._data);
-
     public Vector<T> AsVector()
         => new Vector<T>(_data);
 
-    public Matrix<T> MultiplyRight(IReadOnlyMatrix<T> other)
+    public Matrix<T> MultiplyRight(Matrix<T> other)
     {
         if(_height != other.Width)
             throw new ArgumentException();
@@ -122,7 +103,7 @@ public class Matrix<T> : IReadOnlyMatrix<T>
                 other[i, j] = buffer[j];
         }
 
-        return CreateCachedCopy(other);
+        return other;
     }
 
     public Vector<T> ApplyTo(Vector<T> vector)
