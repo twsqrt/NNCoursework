@@ -7,7 +7,7 @@ public class Vector<T> : IReadOnlyVector<T>
     where T : INumber<T>
 {
     private readonly int _dimension;
-    private T[] _data;
+    private readonly T[] _data;
 
     public int Dimension => _dimension;
 
@@ -29,83 +29,36 @@ public class Vector<T> : IReadOnlyVector<T>
         set => _data[index] = value;
     }
 
-    public Vector(int length)
-    {
-        _dimension = length;
-        _data = new T[length];
-    }
-
     public Vector(T[] data)
     {
         _dimension = data.Length;
         _data = data;
     }
 
-    public static Vector<T> Copy(IReadOnlyVector<T> other)
-    {
-        var data = new T[other.Dimension];
-        for(int i = 0; i < other.Dimension; i++)
-            data[i] = other[i];
-           
-        return new Vector<T>(data);
-    }
-
-    public static Vector<T> ZeroVector(int length)
+    public static Vector<T> CreateZeroVector(int length)
         => new Vector<T>(Enumerable.Range(0, length).Select(_ => T.Zero).ToArray());
     
-    public static Vector<T> CreateFromFunction(int length, Func<int, T> function)
+    public static Vector<T> Create1DVector(T value)
+        => new Vector<T>(new T[] {value});
+
+    public void Add(IReadOnlyVector<T> vector)
     {
-        var data = new T[length];
-        for(int i =0; i < length; i++)
-            data[i] = function(i);
-          
-        return new Vector<T>(data);
+        for(int i = 0; i < _dimension; i++)
+            _data[i] += vector[i];
+    }
+
+    public Vector<T> Scale(T value)
+    {
+        for(int i = 0; i < _dimension; i++)
+            _data[i] *= value;
+        
+        return this;
     }
     
-    public static T ScalarProduct(Vector<T> lhs, Vector<T> rhs)
+    public void CopyValuesFrom(Vector<T> value)
     {
-        if(lhs.Dimension != rhs.Dimension)
-            throw new ArgumentException();
-        
-        T result = T.Zero;
-        for(int i =0; i < lhs.Dimension; i++)
-            result += lhs[i] * rhs[i];
-        return result;
-    }
-
-    public void MultiplyByScalar(T scalar)
-    {
-        for(int i = 0; i < _dimension; i++)
-            _data[i] *= scalar;
-    }
-
-    public override string ToString()
-    {
-        var sb = new StringBuilder();
-
-        sb.Append("[");
-        for(int i =0; i < _dimension; i++)
-            sb.Append($"{_data[i]},\t");
-        sb.Append("]");
-
-        return sb.ToString();
-    }
-
-    public void SetValue(IReadOnlyVector<T> value)
-    {
-        if(_dimension != value.Dimension)
-            throw new ArgumentException();
-           
-        _data = Copy(value)._data;
-    }
-
-    public void Substract(IReadOnlyVector<T> value)
-    {
-        if(value.Dimension != _dimension)
-            throw new ArgumentException();
-
-        for(int i = 0; i < _dimension; i++)
-            _data[i] -= value[i];
+        for(int i = 0; i < _data.Length; i++)
+            _data[i] = value._data[i];
     }
 
     public T ToNumber()
@@ -116,22 +69,24 @@ public class Vector<T> : IReadOnlyVector<T>
         return _data[0];
     }
 
-    public IReadOnlyMatrix<T> ToMatrixCached(int height, int width)
-        => new Matrix<T>(height, width, _data);
+    public Matrix<T> As1DMatrix()
+        => new Matrix<T>(1, _dimension, _data);
 
-    public static Vector<T> Sum(IReadOnlyVector<T> lhs, IReadOnlyVector<T> rhs)
+    public static Vector<T> operator +(Vector<T> lhs, Vector<T> rhs)
     {
-        if(lhs.Dimension != rhs.Dimension)
-            throw new ArgumentException();
-        
-        return CreateFromFunction(lhs.Dimension, i => lhs[i] + rhs[i]);
+        var _data = new T[lhs.Dimension];
+        for(int i = 0; i < _data.Length; i++)
+            _data[i] = lhs[i] + rhs[i];
+
+        return new Vector<T>(_data);
     }
 
-    public static Vector<T> Difference(IReadOnlyVector<T> lhs, IReadOnlyVector<T> rhs)
+    public static Vector<T> operator -(Vector<T> lhs, Vector<T> rhs)
     {
-        if(lhs.Dimension != rhs.Dimension)
-            throw new ArgumentException();
-        
-        return CreateFromFunction(lhs.Dimension, i => lhs[i] - rhs[i]);
+        var _data = new T[lhs.Dimension];
+        for(int i = 0; i < _data.Length; i++)
+            _data[i] = lhs[i] - rhs[i];
+
+        return new Vector<T>(_data);
     }
 }

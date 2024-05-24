@@ -14,17 +14,17 @@ public class LayerTests
         float w21 = -1.0f;
         float w22 = 1.5f;
 
-        var parameter = ParameterFactory.CreateFromData(new float[] { 1.0f, 2.0f});
-        var weights = ParameterFactory.CreateFromData(new float[]{w11, w12, w21, w22});
+        var parameter = ParameterNode.CreateFromArray(new float[] { 1.0f, 2.0f});
+        var weights = ParameterNode.CreateFromArray(new float[]{w11, w12, w21, w22});
 
-        var layer = new LayerOperation(weights, parameter);
+        var layer = new LayerNode(weights, parameter, 1);
         var opB = new TestUnaryOperationB(layer);
         var opC = new TestUnaryOperationC(opB);
 
-        opC.UpdateValue();
+        var result = opC.CalculateValue().ToNumber();
 
         float correctValue = MathF.Sqrt(w11 + 2.0f * w12) + w21 + 2.0f * w22 + MathF.Sin(w21 + 2.0f * w22) + 2.0f;
-        Assert.AreEqual(correctValue, opC.CurrentValue.ToNumber(), 0.0001f);
+        Assert.AreEqual(correctValue, result, 0.0001f);
     }
 
     [TestMethod]
@@ -35,14 +35,14 @@ public class LayerTests
         float w21 = -1.0f;
         float w22 = 1.5f;
 
-        var parameter = ParameterFactory.CreateFromData(new float[] { 1.0f, 2.0f});
-        var weights = ParameterFactory.CreateFromData(new float[]{w11, w12, w21, w22});
+        var parameter = ParameterNode.CreateFromArray(new float[] { 1.0f, 2.0f});
+        var weights = ParameterNode.CreateFromArray(new float[]{w11, w12, w21, w22});
 
-        var layer = new LayerOperation(weights, parameter);
+        var layer = new LayerNode(weights, parameter, 1);
         var opB = new TestUnaryOperationB(layer);
         var opC = new TestUnaryOperationC(opB);
 
-        opC.UpdateValue();
+        opC.CalculateValue();
         opC.Backpropagate();
 
         float dw11 = weights.CurrentJacobian[0, 0];

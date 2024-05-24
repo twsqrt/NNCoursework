@@ -14,5 +14,5 @@ public interface IReadOnlyMatrix<T>
     Matrix<T> MultiplyRight(IReadOnlyMatrix<T> other);
     Matrix<T> MultiplyRightCached(Matrix<T> other);
 
-    Vector<T> ApplyTo(IReadOnlyVector<T> vector);
+    Vector<T> ApplyTo(Vector<T> vector);
 }

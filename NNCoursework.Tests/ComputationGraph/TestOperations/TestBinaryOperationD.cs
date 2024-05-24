@@ -1,19 +1,19 @@
-using System.Net.Http.Headers;
 using LinearAlgebra;
+using NeuralNetworks;
 using NeuralNetworks.ComputationGraph;
 
 namespace ComputationGraph.Tests;
 
-public class TestBinaryOperationD : BinaryOperation
+public class TestBinaryOperationD : BinaryOperationNode
 {
-    public TestBinaryOperationD(Node leftParameter, Node rightParameter) : base(leftParameter, rightParameter, 2)
+    public TestBinaryOperationD(Node lhs, Node rhs, int graphRootDimension) 
+    : base(lhs, rhs, 2, graphRootDimension)
     {
-        if(leftParameter.Dimension != 3
-            || rightParameter.Dimension != 1)
+        if(lhs.Dimension != 3 || rhs.Dimension != 1)
             throw new ArgumentException();
     }
 
-    protected override Vector<float> Function(IReadOnlyVector<float> left, IReadOnlyVector<float> right)
+    protected override Vector<float> Function(Vector<float> left, Vector<float> right)
     {
         (float y1, float y2, float y3) = (left[0], left[1], left[2]);
         float x = right.ToNumber();
@@ -21,7 +21,7 @@ public class TestBinaryOperationD : BinaryOperation
         return new Vector<float>(new float[] {y1 * x + y2 * y3 + 1.0f / x, 1.0f / (y1 + x) + MathF.Sqrt(y2 * y2 + x + y3)});
     }
 
-    protected override IReadOnlyMatrix<float> LeftJacobian(IReadOnlyVector<float> left, IReadOnlyVector<float> right)
+    protected override Matrix<float> GetLeftJacobian(Vector<float> left, Vector<float> right)
     {
         (float y1, float y2, float y3) = (left[0], left[1], left[2]);
         float x = right.ToNumber();
@@ -30,7 +30,7 @@ public class TestBinaryOperationD : BinaryOperation
         return new Matrix<float>(2, 3, data);
     }
 
-    protected override IReadOnlyMatrix<float> RightJacobian(IReadOnlyVector<float> left, IReadOnlyVector<float> right)
+    protected override Matrix<float> GetRightJacobian(Vector<float> left, Vector<float> right)
     {
         (float y1, float y2, float y3) = (left[0], left[1], left[2]);
         float x = right.ToNumber();

@@ -12,16 +12,16 @@ public class OperationTests
         float x = 1.0f;
         float y = 2.0f;
 
-        Parameter parameter = ParameterFactory.CreateFromData(new float[] {x, y});
+        ParameterNode parameter = ParameterNode.CreateFromArray(new float[] {x, y});
 
         var opA = new TestUnaryOperationA(parameter);
         var opB = new TestUnaryOperationB(opA);
         var opC = new TestUnaryOperationC(opB);
 
-        opC.UpdateValue();
+        var result = opC.CalculateValue().ToNumber();
 
         float correctValue = MathF.Sqrt(x * x + y * y) + x * y + MathF.Sin(x * y + 1.0f) + 3.0f;
-        Assert.AreEqual(correctValue, opC.CurrentValue.ToNumber(), 0.0001f);
+        Assert.AreEqual(correctValue, result, 0.0001f);
     }
 
     [TestMethod]
@@ -30,13 +30,13 @@ public class OperationTests
         float x = 1.0f;
         float y = 2.0f;
 
-        Parameter parameter = ParameterFactory.CreateFromData(new float[] {x, y});
+        ParameterNode parameter = ParameterNode.CreateFromArray(new float[] {x, y});
 
         var opA = new TestUnaryOperationA(parameter);
         var opB = new TestUnaryOperationB(opA);
         var opC = new TestUnaryOperationC(opB);
 
-        opC.UpdateValue();
+        opC.CalculateValue();
         opC.Backpropagate();
 
         float correctDx = y + y * MathF.Cos(x * y + 1.0f) + x / MathF.Sqrt(x * x + y * y);
@@ -57,18 +57,18 @@ public class OperationTests
         float y1 = 1.5f;
         float y2 = 0.5f;
 
-        Parameter x = ParameterFactory.CreateFromData(new float[] {x1, x2});
-        Parameter y = ParameterFactory.CreateFromData(new float[] {y1, y2});
+        ParameterNode x = ParameterNode.CreateFromArray(new float[] {x1, x2});
+        ParameterNode y = ParameterNode.CreateFromArray(new float[] {y1, y2});
 
         var opA = new TestUnaryOperationA(y);
-        var add = new AdditionOperation(opA, x);
+        var add = new AdditionNode(opA, x, 1);
         var opB = new TestUnaryOperationB(add);
         var opC = new TestUnaryOperationC(opB);
 
-        opC.UpdateValue();
+        var result = opC.CalculateValue().ToNumber();
         
         float correctValue = MathF.Sqrt(y1 * y1 + y2 * y2 + x1) + y1 * y2 + x2 + MathF.Sin(y1 * y2 + x2 + 1) + 3;
-        Assert.AreEqual(correctValue, opC.CurrentValue.ToNumber(), 0.0001f);
+        Assert.AreEqual(correctValue, result, 0.0001f);
     }
 
     [TestMethod]
@@ -79,18 +79,15 @@ public class OperationTests
         float y1 = 1.5f;
         float y2 = 0.5f;
 
-        Parameter x = ParameterFactory.CreateFromData(new float[] {x1, x2});
-        Parameter y = ParameterFactory.CreateFromData(new float[] {y1, y2});
-
-        x.SetValue(new Vector<float>(new float[] {x1, x2}));
-        y.SetValue(new Vector<float>(new float[] {y1, y2}));
+        ParameterNode x = ParameterNode.CreateFromArray(new float[] {x1, x2});
+        ParameterNode y = ParameterNode.CreateFromArray(new float[] {y1, y2});
 
         var opA = new TestUnaryOperationA(y);
-        var add = new AdditionOperation(opA, x);
+        var add = new AdditionNode(opA, x, 1);
         var opB = new TestUnaryOperationB(add);
         var opC = new TestUnaryOperationC(opB);
 
-        opC.UpdateValue();
+        opC.CalculateValue();
         opC.Backpropagate();
 
         float dx1 = x.CurrentJacobian[0, 0];
@@ -117,16 +114,16 @@ public class OperationTests
         float y3 = 2.0f;
         float x1 = 1.0f;
 
-        Parameter x = ParameterFactory.CreateFromData(new float[] {x1});
-        Parameter y = ParameterFactory.CreateFromData(new float[] {y1, y2, y3});
+        ParameterNode x = ParameterNode.CreateFromArray(new float[] {x1});
+        ParameterNode y = ParameterNode.CreateFromArray(new float[] {y1, y2, y3});
 
-        var opD = new TestBinaryOperationD(y, x);
+        var opD = new TestBinaryOperationD(y, x, 1);
         var opC = new TestUnaryOperationC(opD);
 
-        opC.UpdateValue();
+        var result = opC.CalculateValue().ToNumber();
 
         float correctValue = y1 * x1 + y2 * y3 + 1.0f * x1 + 1.0f / (y1 + x1) + MathF.Sqrt(y2 * y2 + x1 + y3) + 1.0f;
-        Assert.AreEqual(correctValue, opC.CurrentValue.ToNumber(), 0.0001f);
+        Assert.AreEqual(correctValue, result, 0.0001f);
     }
 
     [TestMethod]
@@ -137,13 +134,13 @@ public class OperationTests
         float y3 = 2.0f;
         float x1 = 1.0f;
 
-        Parameter x = ParameterFactory.CreateFromData(new float[] {x1});
-        Parameter y = ParameterFactory.CreateFromData(new float[] {y1, y2, y3});
+        ParameterNode x = ParameterNode.CreateFromArray(new float[] {x1});
+        ParameterNode y = ParameterNode.CreateFromArray(new float[] {y1, y2, y3});
 
-        var opD = new TestBinaryOperationD(y, x);
+        var opD = new TestBinaryOperationD(y, x, 1);
         var opC = new TestUnaryOperationC(opD);
 
-        opC.UpdateValue();
+        opC.CalculateValue();
         opC.Backpropagate();
 
         float dy1 = y.CurrentJacobian[0, 0];

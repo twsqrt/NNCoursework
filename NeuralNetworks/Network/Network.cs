@@ -5,20 +5,20 @@ namespace NeuralNetworks.Network;
 
 public class Network
 {
-    private readonly Parameter[] _parameters;
-    private readonly Parameter _input;
-    private readonly Node _root;
-    private readonly Node _indexRoot;
-    private readonly Parameter _indexParameter;
+    private readonly ParameterNode[] _parameters;
+    private readonly ParameterNode _input;
+    private readonly Node _output;
+    private readonly Node _index;
+    private readonly ParameterNode _indexParameter;
 
-    public Network(Parameter input, Parameter[] parameters, Node root)
+    public Network(ParameterNode input, ParameterNode[] parameters, Node output)
     {
         _parameters = parameters;
         _input = input; 
-        _root = root;
+        _output = output;
 
-        _indexParameter = ParameterFactory.CreateZero(_root.Dimension);
-        _indexRoot = new SquareMetric(_indexParameter, _root);
+        _indexParameter = ParameterNode.CreateZero(output.Dimension);
+        _index = new MetricNode(_output, _indexParameter);
     }
 
     public void Fit(TrainData[] data, int iterationCount, float learningRate)
@@ -29,25 +29,25 @@ public class Network
             int index = random.Next(0, data.Length);
             TrainData row = data[index];
 
-            _input.SetValue(row.Data);
-            _indexParameter.SetValue(row.Markup);
+            _input.Value = row.Data;
+            _indexParameter.Value = row.Markup;
 
-            _indexRoot.UpdateValue();
-            _indexRoot.Backpropagate();
+            _index.CalculateValue();
+            _index.Backpropagate();
 
-            foreach(Parameter parameter in _parameters)
+            foreach(ParameterNode parameter in _parameters)
             {
-                Vector<float> gradient = parameter.CurrentJacobian.ToVectorCached();
-                gradient.MultiplyByScalar(learningRate);
-                Vector<float> newValue = Vector<float>.Difference(parameter.CurrentValue, gradient);
-                parameter.SetValue(newValue);
+                Vector<float> gradient = parameter.CurrentJacobian.AsVector();
+                gradient.Scale(-1.0f * learningRate);
+
+                parameter.Value.Add(gradient);
             }
         }
     }
 
-    public IReadOnlyVector<float> Execute(IReadOnlyVector<float> input)
+    public Vector<float> Execute(Vector<float> input)
     {
-        _input.SetValue(input);
-        return _root.UpdateValue();
+        _input.Value = input;
+        return _output.CalculateValue();
     }
 }

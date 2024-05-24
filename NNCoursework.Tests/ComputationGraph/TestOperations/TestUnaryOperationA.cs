@@ -3,23 +3,23 @@ using NeuralNetworks.ComputationGraph;
 
 namespace ComputationGraph.Tests;
 
-public class TestUnaryOperationA : UnaryOperation
+public class TestUnaryOperationA : UnaryOperationNode
 {
-    public TestUnaryOperationA(Node parameter) : base(parameter, 2)
+    public TestUnaryOperationA(Node child) : base(child, 2)
     {
-        if(parameter.Dimension != 2)
+        if(child.Dimension != 2)
             throw new ArgumentException();
     }
 
-    protected override Vector<float> Function(IReadOnlyVector<float> at)
+    protected override Vector<float> Function(Vector<float> parameter)
     {
-        (float x, float y) = (at[0], at[1]);
+        (float x, float y) = (parameter[0], parameter[1]);
         return new Vector<float>(new float[] {x * x + y * y, x * y + 1.0f});
     }
 
-    protected override IReadOnlyMatrix<float> Jacobian(IReadOnlyVector<float> at)
+    protected override Matrix<float> GetJacobian(Vector<float> parameter)
     {
-        (float x, float y) = (at[0], at[1]);
+        (float x, float y) = (parameter[0], parameter[1]);
         return new Matrix<float>(2, 2, new float[] {2 * x, 2 * y, y, x});
     }
 }

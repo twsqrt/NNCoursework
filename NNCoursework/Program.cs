@@ -7,11 +7,11 @@ var builder = new NetworkBuilder();
 Network network = builder.Create()
     .WithInput(1)
     .ToLayer(10)
-    .WithTransferFunction(ActivationFunctionType.LOGSIG)
+    .WithTransferFunction(ActivationType.LOGSIG)
     .ToLayer(10)
-    .WithTransferFunction(ActivationFunctionType.LOGSIG)
+    .WithTransferFunction(ActivationType.LOGSIG)
     .ToLayer(1)
-    .WithTransferFunction(ActivationFunctionType.PURELIN)
+    .WithTransferFunction(ActivationType.PURELIN)
     .ToOutput()
     .Build();
 
@@ -31,7 +31,7 @@ for(int i = 0; i < 200; i++)
     data[i] = new TrainData(new float[]{x}, new float[]{y});
 }
 
-network.Fit(data, 100000, 0.2f);
+network.Fit(data, 2000000, 0.1f);
 
 string docPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
 

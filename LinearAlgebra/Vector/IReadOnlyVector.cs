@@ -11,6 +11,4 @@ public interface IReadOnlyVector<T>
     T LengthSquared { get; }
 
     T ToNumber();
-
-    IReadOnlyMatrix<T> ToMatrixCached(int height, int width);
 }

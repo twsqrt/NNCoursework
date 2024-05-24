@@ -16,7 +16,7 @@ public interface ISpecifyLayer
 
 public interface ISpecifyTransferFunction
 {
-    ISpecifyNextLayerOrOutput WithTransferFunction(ActivationFunctionType type);
+    ISpecifyNextLayerOrOutput WithTransferFunction(ActivationType type);
 }
 
 public interface ISpecifyNextLayerOrOutput : ISpecifyLayer
@@ -34,13 +34,13 @@ public class NetworkBuilder
     private class Iner
     : ISpecifyInput, ISpecifyNextLayerOrOutput, ISpecifyTransferFunction, IBuild
     {
-        private readonly List<Parameter> _parameters;
-        private Parameter _input;
+        private readonly List<ParameterNode> _parameters;
+        private ParameterNode _input;
         private Node _currentRoot;
 
         public Iner()
         {
-            _parameters = new List<Parameter>();
+            _parameters = new List<ParameterNode>();
             _input = null;
             _currentRoot = null;
         }
@@ -56,9 +56,8 @@ public class NetworkBuilder
 
         public ISpecifyTransferFunction ToLayerWithoutBias(int numberOfNeurons)
         {
-            Parameter weights = ParameterFactory.CreateRandom(numberOfNeurons * _currentRoot.Dimension);
-
-            var layer = new LayerOperation(weights, _currentRoot);
+            ParameterNode weights = ParameterNode.CreateRandom(numberOfNeurons * _currentRoot.Dimension);
+            var layer = new LayerNode(weights, _currentRoot, 1);
 
             _currentRoot = layer;
             _parameters.Add(weights);
@@ -68,8 +67,8 @@ public class NetworkBuilder
 
         private void AddBias(int numberOfNeurons)
         {
-            Parameter bias = ParameterFactory.CreateRandom(numberOfNeurons);
-            var add = new AdditionOperation(_currentRoot, bias);
+            ParameterNode bias = ParameterNode.CreateRandom(numberOfNeurons);
+            var add = new AdditionNode(_currentRoot, bias, 1);
 
             _currentRoot = add;
             _parameters.Add(bias);
@@ -87,15 +86,15 @@ public class NetworkBuilder
 
         public ISpecifyLayer WithInput(int numberOfNeurons)
         {
-            _input = ParameterFactory.CreateZero(numberOfNeurons);
+            _input = ParameterNode.CreateZero(numberOfNeurons);
             _currentRoot = _input;
 
             return this;
         }
 
-        public ISpecifyNextLayerOrOutput WithTransferFunction(ActivationFunctionType type)
+        public ISpecifyNextLayerOrOutput WithTransferFunction(ActivationType type)
         {
-            TransferOperation transfer = TransferOperation.Create(_currentRoot, type);
+            ActivationNode transfer = ActivationNode.Create(_currentRoot, type);
             _currentRoot = transfer;
 
             return this;

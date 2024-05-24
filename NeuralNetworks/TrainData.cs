@@ -4,8 +4,8 @@ namespace NeuralNetworks;
 
 public readonly struct TrainData
 {
-    public IReadOnlyVector<float> Data {get; init;}
-    public IReadOnlyVector<float> Markup {get; init;}
+    public Vector<float> Data {get; init;}
+    public Vector<float> Markup {get; init;}
 
     public TrainData(float[] data, float[] markup)
     {

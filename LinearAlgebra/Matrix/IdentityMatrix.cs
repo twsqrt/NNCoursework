@@ -29,6 +29,6 @@ public class IdentityMatrix<T> : IReadOnlyMatrix<T>
     public Matrix<T> MultiplyRightCached(Matrix<T> other)
         => Matrix<T>.CreateCachedCopy(other);
 
-    public Vector<T> ApplyTo(IReadOnlyVector<T> vector)
-        => Vector<T>.Copy(vector);
+    public Vector<T> ApplyTo(Vector<T> vector)
+        => vector;
 }

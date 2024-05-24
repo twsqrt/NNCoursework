@@ -70,24 +70,7 @@ public class Matrix<T> : IReadOnlyMatrix<T>
     public static Matrix<T> CreateCachedCopy(Matrix<T> other) 
         => new Matrix<T>(other.Height, other.Width, other._data);
 
-    public override string ToString()
-    {
-        var sb = new StringBuilder();
-
-        sb.AppendLine("[");
-        for (int i = 0; i < Height; i++)
-        {
-            sb.Append("\t[");
-            for(int j =0; j < Width; j++)
-                sb.Append($"{this[i, j]},\t");
-            sb.AppendLine("]");
-        }
-        sb.Append(']');
-
-        return sb.ToString();
-    }
-
-    public Vector<T> ToVectorCached()
+    public Vector<T> AsVector()
         => new Vector<T>(_data);
 
     public Matrix<T> MultiplyRight(IReadOnlyMatrix<T> other)
@@ -142,7 +125,7 @@ public class Matrix<T> : IReadOnlyMatrix<T>
         return CreateCachedCopy(other);
     }
 
-    public Vector<T> ApplyTo(IReadOnlyVector<T> vector)
+    public Vector<T> ApplyTo(Vector<T> vector)
     {
         if(vector.Dimension != _width)
             throw new ArgumentException();
@@ -159,5 +142,17 @@ public class Matrix<T> : IReadOnlyMatrix<T>
         }
 
         return new Vector<T>(data);
+    }
+
+    public void CopyValuesFrom(Matrix<T> other)
+    {
+        for(int i = 0; i < _data.Length; i++)
+            _data[i] = other._data[i];
+    }
+
+    public void CopyValuesFrom(Vector<T> other)
+    {
+        for(int i = 0; i < _data.Length; i++)
+            _data[i] = other[i];
     }
 }

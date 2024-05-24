@@ -3,20 +3,20 @@ using NeuralNetworks.ComputationGraph;
 
 namespace ComputationGraph.Tests;
 
-public class TestUnaryOperationC : UnaryOperation
+public class TestUnaryOperationC : UnaryOperationNode
 {
-    public TestUnaryOperationC(Node parameter) : base(parameter, 1)
+    public TestUnaryOperationC(Node child) : base(child, 1)
     {
-        if(parameter.Dimension != 2)
+        if(child.Dimension != 2)
             throw new ArgumentException();
     }
 
-    protected override Vector<float> Function(IReadOnlyVector<float> at)
+    protected override Vector<float> Function(Vector<float> parameter)
     {
-        (float x, float y) = (at[0], at[1]);
+        (float x, float y) = (parameter[0], parameter[1]);
         return new Vector<float>(new float[] {x + y + 1.0f});
     }
 
-    protected override IReadOnlyMatrix<float> Jacobian(IReadOnlyVector<float> at)
+    protected override Matrix<float> GetJacobian(Vector<float> parameter)
         => new Matrix<float>(1, 2, new float[] {1.0f, 1.0f});
 }

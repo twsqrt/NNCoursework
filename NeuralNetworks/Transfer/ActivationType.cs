@@ -1,6 +1,6 @@
 ﻿namespace NeuralNetworks.Transfer;
 
-public enum ActivationFunctionType
+public enum ActivationType
 {
     PURELIN,
     SATLINS,

@@ -58,7 +58,7 @@ public class DiagonalMatrix<T> : IReadOnlyMatrix<T>
         return Matrix<T>.CreateCachedCopy(other);
     }
 
-    public Vector<T> ApplyTo(IReadOnlyVector<T> vector)
+    public Vector<T> ApplyTo(Vector<T> vector)
     {
         if(vector.Dimension != _length)
             throw new ArgumentException();
