@@ -21,16 +21,16 @@ public class Network
         _index = new MetricNode(_output, _indexParameter);
     }
 
-    public void Fit(TrainData[] data, int iterationCount, float learningRate)
+    public void Fit(Vector<float>[] data, Vector<float>[] markup, int iterationCount, float learningRate)
     {
         var random = new Random();
+
         for(int i = 0; i < iterationCount; i++)
         {
             int index = random.Next(0, data.Length);
-            TrainData row = data[index];
 
-            _input.Value = row.Data;
-            _indexParameter.Value = row.Markup;
+            _input.Value = data[index];
+            _indexParameter.Value = markup[index];
 
             _index.CalculateValue();
             _index.Backpropagate();

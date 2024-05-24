@@ -20,27 +20,32 @@ Network network = builder.Create()
 float f(float x) => MathF.Cos(3.0f * MathF.Exp(2.0f * x) * MathF.Cos(2.0f * x));
 //float f(float x) => 2.0f * x -1.0f;
 
-var random = new Random();
-var data = new TrainData[200];
-for(int i = 0; i < 200; i++)
-{
-    float x = i / 100.0f -1.0f;
-    float y = f(x);
+const int DATA_SIZE = 200;
 
+var random = new Random();
+var data = new Vector<float>[DATA_SIZE];
+var markup = new Vector<float>[DATA_SIZE];
+
+for(int i = 0; i < DATA_SIZE; i++)
+{
+    float x = i * 2.0f / DATA_SIZE -1.0f;
+    float y = f(x);
     y += (float) random.NextDouble() * 0.2f - 0.1f;
-    data[i] = new TrainData(new float[]{x}, new float[]{y});
+    
+    data[i] = Vector<float>.Create1DVector(x);
+    markup[i] = Vector<float>.Create1DVector(y);
 }
 
-network.Fit(data, 2000000, 0.1f);
+network.Fit(data, markup, 2000000, 0.1f);
 
 string docPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
 
 using (var output = new StreamWriter(Path.Combine(docPath, "input_data.csv")))
 {
-    foreach(TrainData row in data)
+    for(int i = 0; i < DATA_SIZE; i++)
     {
-        float x = row.Data.ToNumber();
-        float y = row.Markup.ToNumber();
+        float x = data[i].ToNumber();
+        float y = markup[i].ToNumber();
 
         output.WriteLine($"{x};{y}");
     }
@@ -51,9 +56,7 @@ using (var output = new StreamWriter(Path.Combine(docPath, "result.csv")))
     for(int i = 0; i < 1000; i++)
     {
         float x = i / 500.0f -1.0f;
-        var vector = new Vector<float>(new float[] {x});
-
-        float y = network.Execute(vector).ToNumber();
+        float y = network.Execute(Vector<float>.Create1DVector(x)).ToNumber();
 
         output.WriteLine($"{x};{y}");
     }
