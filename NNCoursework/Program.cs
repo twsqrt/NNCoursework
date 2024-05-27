@@ -1,62 +1,103 @@
-﻿using LinearAlgebra;
-using NeuralNetworks;
+﻿using System.Globalization;
+using CsvHelper;
+using LinearAlgebra;
+using NeuralNetworks.Activation;
+using NeuralNetworks.SDGMethod;
 using NeuralNetworks.Network;
-using NeuralNetworks.Transfer;
 
-float f(float x) => MathF.Cos(3.0f * MathF.Exp(2.0f * x) * MathF.Cos(2.0f * x));
+const string PROJECT_DIRECTORY = @"C:\Users\twsqrt\source\repos\NNCoursework";
+string mnistDataDirectory = Path.Combine(PROJECT_DIRECTORY, "MNIST");
 
-const int DATA_SIZE = 200;
+string mnistTrainFile = Path.Combine(mnistDataDirectory, "mnist_train.csv");
+string mnistTestFile = Path.Combine(mnistDataDirectory, "mnist_test.csv");
 
-var random = new Random();
-var data = new Vector<float>[DATA_SIZE];
-var markup = new Vector<float>[DATA_SIZE];
+const int TRAIN_SIZE = 60000;
+const int TEST_SIZE = 4451;
+const int IMAGE_SIZE = 28 * 28;
 
-for(int i = 0; i < DATA_SIZE; i++)
-{
-    float x = i * 2.0f / DATA_SIZE -1.0f;
-    float y = f(x);
-    y += (float) random.NextDouble() * 0.2f - 0.1f;
-    
-    data[i] = Vector<float>.Create1DVector(x);
-    markup[i] = Vector<float>.Create1DVector(y);
+var data = new Vector<float>[TRAIN_SIZE];
+var markup = new Vector<float>[TRAIN_SIZE];
+
+using (var reader = new StreamReader(mnistTrainFile)) 
+using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture)) 
+{ 
+    int percentCount = 0;
+    for(int i = 0; i < TRAIN_SIZE; i++)
+    {
+        float percent = 100.0f * i / TRAIN_SIZE;
+        if(percent + 1.0f > percentCount)
+        {
+            if(percentCount % 5 == 0)
+                Console.WriteLine($"Read train data progress: {percentCount}%");
+
+            percentCount++;
+        }
+
+        csv.Read();
+
+        int number = csv.GetField<int>(0);
+        Vector<float> vector = Vector<float>.CreateZeroVector(10);
+        vector[number] = 1.0f;
+        markup[i] = vector;
+
+        var dataArray = new float[IMAGE_SIZE];
+        for(int j = 0; j < IMAGE_SIZE; j++)
+            dataArray[j] = csv.GetField<float>(j + 1) / 255;
+
+        data[i] = new Vector<float>(dataArray);
+    }
 }
 
 var builder = new NetworkBuilder();
 Network network = builder.Create()
-    .WithInput(1)
-    .ToLayer(3)
+    .WithInput(IMAGE_SIZE)
+    .ToLayer(200)
+    .WithActivationFunction(ActivationType.LOGSIG)
+    .ToLayer(80)
     .WithActivationFunction(ActivationType.LOGSIG)
     .ToLayer(10)
     .WithActivationFunction(ActivationType.LOGSIG)
-    .ToLayer(1)
     .ToOutput()
     .Build();
 
-//var sgdMethod = new RegularSGD(0.05f);
-var sgdMethod = new RMSprop(0.9f, 0.05f);
+var sgdMethod = new RegularSGD(0.01f);
+network.Fit(data, markup, sgdMethod, 5, Console.Out);
 
-network.Fit(data, markup, 5, 300000, sgdMethod, Console.Out);
-
-string docPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
-
-using (var output = new StreamWriter(Path.Combine(docPath, "input_data.csv")))
-{
-    for(int i = 0; i < DATA_SIZE; i++)
+int correctCount = 0;
+using (var reader = new StreamReader(mnistTestFile)) 
+using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture)) 
+{ 
+    for(int i = 0; i < TEST_SIZE; i++)
     {
-        float x = data[i].ToNumber();
-        float y = markup[i].ToNumber();
+        csv.Read();
 
-        output.WriteLine($"{x};{y}");
+        int number = csv.GetField<int>(0);
+
+        var dataArray = new float[IMAGE_SIZE];
+        for(int j = 0; j < IMAGE_SIZE; j++)
+            dataArray[j] = csv.GetField<float>(j + 1) / 255;
+        
+        var input = new Vector<float>(dataArray);
+
+        Vector<float> output = network.Execute(input);
+        if(float.IsNaN(output.LengthSquared))
+            throw new ArgumentException();
+
+        float maxElement = 0.0f;
+        int outputNumber = 0;
+        for(int j = 0; j < output.Dimension; j++)
+        {
+            if(maxElement < output[j])
+            {
+                maxElement = output[j];
+                outputNumber = j;
+            }
+        }
+
+        if(outputNumber == number)
+            correctCount++;
     }
 }
 
-using (var output = new StreamWriter(Path.Combine(docPath, "result.csv")))
-{
-    for(int i = 0; i < 1000; i++)
-    {
-        float x = i / 500.0f -1.0f;
-        float y = network.Execute(Vector<float>.Create1DVector(x)).ToNumber();
-
-        output.WriteLine($"{x};{y}");
-    }
-}
+float correctRate = (float) correctCount / TEST_SIZE;
+Console.WriteLine($"Correct rate: {correctRate}");

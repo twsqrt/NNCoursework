@@ -1,4 +1,4 @@
-﻿namespace NeuralNetworks.Transfer;
+﻿namespace NeuralNetworks.Activation;
 
 public enum ActivationType
 {

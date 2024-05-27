@@ -76,6 +76,21 @@ public class Vector<T>
 
     public Matrix<T> AsHorizontalMatrix()
         => new Matrix<T>(1, _dimension, _data);
+    
+    public Matrix<T> AsMatrix(int height, int width)
+        => new Matrix<T>(height, width, _data);
+
+    public static void Addition(Vector<T> lhs, Vector<T> rhs, Vector<T> result)
+    {
+        for(int i = 0; i < result._data.Length; i++)
+            result._data[i] = lhs._data[i] + rhs._data[i];
+    }
+    
+    public static void Difference(Vector<T> lhs, Vector<T> rhs, Vector<T> result)
+    {
+        for(int i = 0; i < result._data.Length; i++)
+            result._data[i] = lhs._data[i] - rhs._data[i];
+    }
 
     public static Vector<T> operator +(Vector<T> lhs, Vector<T> rhs)
     {

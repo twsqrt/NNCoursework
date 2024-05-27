@@ -1,7 +1,7 @@
 ﻿using LinearAlgebra;
 using NeuralNetworks.ComputationGraph;
 
-namespace NeuralNetworks.Transfer;
+namespace NeuralNetworks.Activation;
 
 public class ActivationNode : Node
 {

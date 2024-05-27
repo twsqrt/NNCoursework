@@ -1,7 +1,7 @@
 ﻿using LinearAlgebra;
 using NeuralNetworks.ComputationGraph;
 
-namespace NeuralNetworks;
+namespace NeuralNetworks.SDGMethod;
 
 public interface ISGDMethod
 {

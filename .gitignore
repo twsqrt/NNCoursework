@@ -3,11 +3,10 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/main/VisualStudio.gitignore
 
-# TextBooks
+# Project
 TextBooks/
-
-# PlantUML export data
 out/UML/
+MNIST/
 
 # User-specific files
 *.rsuser

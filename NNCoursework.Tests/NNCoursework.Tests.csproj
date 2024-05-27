@@ -25,8 +25,4 @@
     <ProjectReference Include="..\NNCoursework\NNCoursework.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="LinearAlgebra\" />
-  </ItemGroup>
-
 </Project>

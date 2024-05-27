@@ -1,6 +1,7 @@
-﻿using System.Reflection.Metadata;
-using LinearAlgebra;
+﻿using LinearAlgebra;
 using NeuralNetworks.ComputationGraph;
+using NeuralNetworks.SDGMethod;
+
 
 namespace NeuralNetworks.Network;
 
@@ -34,61 +35,49 @@ public class Network
         }
     }
 
-    private void CreateBatch(Vector<float>[] data, Vector<float>[] markup, int batchSize)
-    {
-        foreach(Vector<float> parameterGradient in _cachedGradient)
-            parameterGradient.SetZero();
-
-        for(int j = 0; j < batchSize; j++)
-        {
-            int index = random.Next(0, data.Length);
-
-            _input.Value = data[index];
-            _indexParameter.Value = markup[index];
-
-            _index.CalculateValue();
-            _index.Backpropagate();
-            
-            for(int k = 0; k < _parameters.Length; k++)
-            {
-                Vector<float> parameterGradient = _parameters[k].CurrentJacobian.AsVector();
-                parameterGradient.Scale(1.0f / batchSize);
-
-                _cachedGradient[k].Add(parameterGradient);
-            }
-        }
-    }
-
-    public void Fit(Vector<float>[] data, Vector<float>[] markup, int batchSize, int iterationCount, ISGDMethod sgdMethod, Action<float> progressCallback)
+    public void Fit(Vector<float>[] data, Vector<float>[] markup, ISGDMethod sgdMethod, Action<int> progressCallback)
     {
         int percentInteger = 0;
 
-        for(int i = 0; i < iterationCount; i++)
+        for(int i = 0; i < data.Length; i++)
         {
-            float percent = 100 * i / iterationCount;
+            float percent = 100.0f * i / data.Length;
             if(percent + 1.0f > percentInteger)
             {
-                progressCallback(percent);
+                progressCallback(percentInteger);
                 percentInteger++;
             }
 
-            CreateBatch(data, markup, batchSize);
+            _input.Value = data[i];
+            _indexParameter.Value = markup[i];
+
+            _index.CalculateValue();
+            _index.Backpropagate();
 
             float learningRate = sgdMethod.CalculateLearningRate(_parameters, _cachedGradient);
 
-            for(int j = 0; j < _parameters.Length; j++)
+            foreach(ParameterNode parameter in _parameters)
             {
-                _cachedGradient[j].Scale(-1.0f * learningRate);
-                _parameters[j].Value.Add(_cachedGradient[j]);
+                Vector<float> gradient = parameter.CurrentJacobian.AsVector();
+                parameter.Value.Add(gradient.Scale(-1.0f * learningRate));
             }
         }
     }
 
-    public void Fit(Vector<float>[] data, Vector<float>[] markup, int batchSize, int iterationCount, ISGDMethod sgdMethod, TextWriter log)
-        => Fit(data, markup, batchSize, iterationCount, sgdMethod, percent => {
-            if(percent % 10 == 0)
-                log.WriteLine($"Progress: {percent}%");
+    public void Fit(Vector<float>[] data, Vector<float>[] markup, ISGDMethod sgdMethod, TextWriter log)
+        => Fit(data, markup, sgdMethod, percent => {
+            if(percent % 5 == 0)
+                log.WriteLine($"Train progress: {percent}%");
         });
+    
+    public void Fit(Vector<float>[] data, Vector<float>[] markup, ISGDMethod sgdMethod, int numberOfEpochs, TextWriter log)
+    {
+        for(int i = 0; i < numberOfEpochs; i++)
+        {
+            log.WriteLine($"Epoch number: {i + 1}");
+            Fit(data, markup, sgdMethod, log);
+        }
+    }
 
     public Vector<float> Execute(Vector<float> input)
     {

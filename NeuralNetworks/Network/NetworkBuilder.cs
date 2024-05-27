@@ -1,5 +1,5 @@
 ﻿using NeuralNetworks.ComputationGraph;
-using NeuralNetworks.Transfer;
+using NeuralNetworks.Activation;
 
 namespace NeuralNetworks.Network;
 
@@ -62,8 +62,10 @@ public class NetworkBuilder
 
         public ISpecifyActivationFunctionOrOutput ToLayerWithoutBias(int numberOfNeurons)
         {
-            ParameterNode weights = ParameterNode.CreateRandom(numberOfNeurons * _currentRoot.Dimension);
-            var layer = new LayerNode(weights, _currentRoot, 1);
+            bool isFistLayer = _parameters.Count == 0;
+
+            ParameterNode weights = ParameterNode.CreateRandom(numberOfNeurons * _currentRoot.Dimension, -1.0f, 1.0f);
+            var layer = new LayerNode(weights, _currentRoot, 1, ! isFistLayer);
 
             _currentRoot = layer;
             _parameters.Add(weights);
@@ -73,7 +75,7 @@ public class NetworkBuilder
 
         private void AddBias(int numberOfNeurons)
         {
-            ParameterNode bias = ParameterNode.CreateRandom(numberOfNeurons);
+            ParameterNode bias = ParameterNode.CreateRandom(numberOfNeurons, -1.0f, 1.0f);
             var add = new AdditionNode(_currentRoot, bias, 1);
 
             _currentRoot = add;

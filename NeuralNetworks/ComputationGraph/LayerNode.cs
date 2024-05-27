@@ -5,13 +5,16 @@ namespace NeuralNetworks.ComputationGraph;
 public class LayerNode : Node
 {
     private readonly Node _child;
-    private readonly Node _weights;
+    private readonly ParameterNode _weights;
     private readonly Matrix<float> _weightsMatrix;
     private readonly Matrix<float> _weightsCachedJacobian;
     private readonly Matrix<float> _childCachedJacobian;
+    private readonly bool _shouldBackpropagateChild;
+
     private Vector<float> _childValue;
 
-    public LayerNode(Node weights, Node child, int graphRootDimension) : base(weights.Dimension / child.Dimension)
+    public LayerNode(ParameterNode weights, Node child, int graphRootDimension, bool shouldBackpropagateChild = true) 
+    : base(weights.Dimension / child.Dimension)
     {
         if(weights.Dimension % child.Dimension != 0)
             throw new ArgumentException();
@@ -19,10 +22,15 @@ public class LayerNode : Node
         _child = child;
         _weights = weights;
 
-        _weightsMatrix = Matrix<float>.CreateZeroMatrix(Dimension, child.Dimension);
-
+        _weightsMatrix = _weights.Value.AsMatrix(Dimension, _child.Dimension);
         _weightsCachedJacobian = Matrix<float>.CreateZeroMatrix(graphRootDimension, weights.Dimension);
-        _childCachedJacobian = Matrix<float>.CreateZeroMatrix(graphRootDimension, child.Dimension);
+
+        _shouldBackpropagateChild = shouldBackpropagateChild;
+        if(_shouldBackpropagateChild)
+            _childCachedJacobian = Matrix<float>.CreateZeroMatrix(graphRootDimension, child.Dimension);
+        else
+            _childCachedJacobian = null;
+
 
         _childValue = null;
     }
@@ -41,16 +49,16 @@ public class LayerNode : Node
 
         _weights.BackpropagateNext(_weightsCachedJacobian);
 
-        Matrix<float>.Multiply(previouseJacobian, _weightsMatrix, _childCachedJacobian);
-        _child.BackpropagateNext(_childCachedJacobian);
+        if(_shouldBackpropagateChild)
+        {
+            Matrix<float>.Multiply(previouseJacobian, _weightsMatrix, _childCachedJacobian);
+            _child.BackpropagateNext(_childCachedJacobian);
+        }
     }
 
     public override Vector<float> CalculateValue()
     {
-        Vector<float> weightsValues = _weights.CalculateValue();
-        _weightsMatrix.CopyValuesFrom(weightsValues);
         _childValue = _child.CalculateValue();
-
         return _weightsMatrix.ApplyTo(_childValue);
     }
 }

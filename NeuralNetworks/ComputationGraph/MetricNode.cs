@@ -8,8 +8,10 @@ public class MetricNode : Node
     private readonly Node _child;
     private readonly ParameterNode _parameter;
     private readonly Matrix<float> _childCachedJacobian;
+    private readonly Vector<float> _metricCachedResult;
 
     private Vector<float> _difference;
+    private Matrix<float> _differenceCachedJacobian;
 
     public MetricNode(Node child, ParameterNode parameter, int graphRootDimension) : base(1)
     {
@@ -21,21 +23,23 @@ public class MetricNode : Node
 
         _childCachedJacobian = Matrix<float>.CreateZeroMatrix(graphRootDimension, child.Dimension);
 
-        _difference = null;
+        _difference = Vector<float>.CreateZeroVector(parameter.Dimension);
+        _differenceCachedJacobian = _difference.AsHorizontalMatrix();
+        _metricCachedResult = Vector<float>.Create1DVector(0.0f);
     }
 
     public override void BackpropagateNext(Matrix<float> previouseJacobian)
     {
         _difference.Scale(2.0f);
-        Matrix<float> jacobian = _difference.AsHorizontalMatrix();
-        Matrix<float>.Multiply(previouseJacobian, jacobian, _childCachedJacobian);
+        Matrix<float>.Multiply(previouseJacobian, _differenceCachedJacobian, _childCachedJacobian);
 
         _child.BackpropagateNext(_childCachedJacobian);
     }
 
     public override Vector<float> CalculateValue()
     {
-        _difference = _child.CalculateValue() - _parameter.Value;
-        return Vector<float>.Create1DVector(_difference.LengthSquared);
+        Vector<float>.Difference(_child.CalculateValue(), _parameter.Value, _difference);
+        _metricCachedResult[0] = _difference.LengthSquared;
+        return _metricCachedResult;
     }
 }
