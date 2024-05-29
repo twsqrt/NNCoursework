@@ -32,4 +32,7 @@ public abstract class UnaryOperationNode : Node
         _childValue = _child.CalculateValue();
         return Function(_childValue);
     }
+
+    public override void Accept(INodeVisitor visitor)
+        => throw new InvalidOperationException();
 }

@@ -13,6 +13,10 @@ public class LayerNode : Node
 
     private Vector<float> _childValue;
 
+    public ParameterNode Weights => _weights;
+    public Node Child => _child;
+    public bool ShouldBackpropagateChild => _shouldBackpropagateChild;
+
     public LayerNode(ParameterNode weights, Node child, int graphRootDimension, bool shouldBackpropagateChild = true) 
     : base(weights.Dimension / child.Dimension)
     {
@@ -34,6 +38,9 @@ public class LayerNode : Node
 
         _childValue = null;
     }
+
+    public override void Accept(INodeVisitor visitor)
+        => visitor.Visit(this);
 
     public override void BackpropagateNext(Matrix<float> previouseJacobian)
     {

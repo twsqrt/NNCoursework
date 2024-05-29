@@ -32,7 +32,7 @@ public interface ISpecifyActivationFunctionOrOutput
 
 public interface IBuild
 {
-    Network Build();
+    NeuralNetwork Build();
 }
 
 public class NetworkBuilder
@@ -51,9 +51,9 @@ public class NetworkBuilder
             _currentRoot = null;
         }
 
-        public Network Build()
+        public NeuralNetwork Build()
         {
-            var network = new Network(_input, _parameters.ToArray(), _currentRoot);
+            var network = new NeuralNetwork(_input, _parameters.ToArray(), _currentRoot);
 
             _parameters.Clear();
 

@@ -44,4 +44,7 @@ public abstract class BinaryOperationNode : Node
 
         return Function(_lhsValue, _rhsValue);
     }
+
+    public override void Accept(INodeVisitor visitor)
+        => throw new InvalidOperationException();
 }

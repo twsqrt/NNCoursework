@@ -43,4 +43,7 @@ public class ParameterNode : Node
     }
 
     public override Vector<float> CalculateValue() => Value;
+
+    public override void Accept(INodeVisitor visitor)
+        => visitor.Visit(this);
 }

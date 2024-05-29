@@ -1,13 +1,13 @@
 ﻿using LinearAlgebra;
 using NeuralNetworks.ComputationGraph;
+using NeuralNetworks.File;
 using NeuralNetworks.SDGMethod;
 
 
 namespace NeuralNetworks.Network;
 
-public class Network
+public class NeuralNetwork
 {
-    private static readonly Random random = new Random();
     private readonly ParameterNode[] _parameters;
     private readonly ParameterNode _input;
     private readonly Node _output;
@@ -15,10 +15,11 @@ public class Network
     private readonly ParameterNode _indexParameter;
     private readonly Vector<float>[] _cachedGradient;
 
-    public int InputDimension => _input.Dimension;
-    public int OutputDimension => _output.Dimension;
+    public ParameterNode Input => _input;
+    public ParameterNode[] Parameters => _parameters;
+    public Node Output => _output;
 
-    public Network(ParameterNode input, ParameterNode[] parameters, Node output)
+    public NeuralNetwork(ParameterNode input, ParameterNode[] parameters, Node output)
     {
         _parameters = parameters;
         _input = input; 
@@ -84,4 +85,10 @@ public class Network
         _input.Value = input;
         return _output.CalculateValue();
     }
+
+    public static NeuralNetwork Import(BinaryReader reader)
+        => NetworkFileManager.Read(reader);
+
+    public void Export(BinaryWriter writer)
+        => NetworkFileManager.Write(this, writer);
 }

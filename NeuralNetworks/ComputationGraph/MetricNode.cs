@@ -28,6 +28,9 @@ public class MetricNode : Node
         _metricCachedResult = Vector<float>.Create1DVector(0.0f);
     }
 
+    public override void Accept(INodeVisitor visitor)
+        => throw new NotImplementedException();
+
     public override void BackpropagateNext(Matrix<float> previouseJacobian)
     {
         _difference.Scale(2.0f);

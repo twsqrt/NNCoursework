@@ -9,6 +9,9 @@ public class AdditionNode : Node
     private readonly Matrix<float> _rhsCachedJacobian;
     private readonly Vector<float> _additionCachedResult;
 
+    public Node LeftNode => _lhs;
+    public Node RightNode => _rhs;
+
     public AdditionNode(Node lhs, Node rhs, int graphRootDimension) : base(lhs.Dimension)
     {
         if(lhs.Dimension != rhs.Dimension)
@@ -33,4 +36,7 @@ public class AdditionNode : Node
         Vector<float>.Addition(_lhs.CalculateValue(), _rhs.CalculateValue(), _additionCachedResult);
         return _additionCachedResult;
     }
+
+    public override void Accept(INodeVisitor visitor)
+        => visitor.Visit(this);
 }

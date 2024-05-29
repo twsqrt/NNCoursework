@@ -5,5 +5,6 @@ public enum ActivationType
     PURELIN,
     SATLINS,
     POSLIN,
-    LOGSIG
+    LOGSIG,
+    CUSTOM = 255
 }
