@@ -4,7 +4,7 @@ public enum ActivationType
 {
     PURELIN,
     SATLINS,
-    POSLIN,
+    RELU,
     LOGSIG,
     CUSTOM = 255
 }

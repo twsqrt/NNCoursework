@@ -38,10 +38,10 @@ public class ActivationNode : Node
             x => x > 0.0f && x < 1.0f ? 1.0f : 0.0f, 
             type
         ),
-        ActivationType.POSLIN => new ActivationNode(
+        ActivationType.RELU => new ActivationNode(
             child, 
-            x => x > 0.0f ? x : 0.0f,
-            x => x > 0.0f ? 1.0f : 0.0f,
+            x => MathF.Max(0.01f * x, x),
+            x => x > 0.0f ? 1.0f : 0.01f,
             type
         ),
         ActivationType.LOGSIG => new ActivationNode(

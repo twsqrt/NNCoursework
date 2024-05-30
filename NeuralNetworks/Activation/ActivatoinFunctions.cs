@@ -1,5 +1,4 @@
-using System.Reflection.Metadata;
-using NeuralNetworks.Activation;
+namespace NeuralNetworks.Activation;
 
 internal static class ActivationFunctions
 {
