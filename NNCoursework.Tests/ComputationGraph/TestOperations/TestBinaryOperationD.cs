@@ -6,8 +6,8 @@ namespace ComputationGraph.Tests;
 
 public class TestBinaryOperationD : BinaryOperationNode
 {
-    public TestBinaryOperationD(Node lhs, Node rhs, int graphRootDimension) 
-    : base(lhs, rhs, 2, graphRootDimension)
+    public TestBinaryOperationD(Node lhs, Node rhs) 
+    : base(lhs, rhs, 2)
     {
         if(lhs.Dimension != 3 || rhs.Dimension != 1)
             throw new ArgumentException();

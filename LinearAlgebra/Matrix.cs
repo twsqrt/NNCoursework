@@ -75,17 +75,25 @@ public class Matrix
         }
     }
 
-    public static void Multiply(Matrix matrix, Vector vector, Vector result)
+    public static void Multiply(Matrix lhs, Vector rhs, Vector result)
     {
-        if(vector.Dimension != matrix.Width)
-            throw new ArgumentException();
-
-        for(int i = 0; i < matrix.Height; i++)
+        for(int i = 0; i < lhs.Height; i++)
         {
             float sum = 0.0f;
+            for(int j = 0; j < rhs.Dimension;  j++)
+                sum += rhs[j] * lhs[i, j];
 
-            for(int j = 0; j < vector.Dimension;  j++)
-                sum += vector[j] * matrix[i, j];
+            result[i] = sum;
+        }
+    }
+
+    public static void Multiply(Vector lhs, Matrix rhs, Vector result)
+    {
+        for(int i = 0; i < rhs.Height; i++)
+        {
+            float sum = 0.0f;
+            for(int j = 0; j < lhs.Dimension;  j++)
+                sum += lhs[j] * rhs[j, i];
 
             result[i] = sum;
         }

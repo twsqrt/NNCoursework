@@ -51,7 +51,7 @@ public static class Train
         }
     }
 
-    public static void TrainNetwork(int numberOfEpochs, float learningRate)
+    public static void TrainNetwork(int numberOfEpochs, float learningRate, string fileName)
     {
 
         Vector[] data, markup;
@@ -73,8 +73,7 @@ public static class Train
 
         network.Fit(data, markup, sgdMethod, numberOfEpochs, Console.Out);
 
-        string networkFileName = $"mnist_network_ep{numberOfEpochs}.bin";
-        using(var stream = File.OpenWrite(Path.Combine(networkFileDirectory, networkFileName)))
+        using(var stream = File.OpenWrite(Path.Combine(networkFileDirectory, fileName)))
         using(var writer = new BinaryWriter(stream))
             network.Export(writer);
     }

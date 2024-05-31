@@ -6,35 +6,32 @@ public abstract class BinaryOperationNode : Node
 {
     private readonly Node _lhs;
     private readonly Node _rhs;
-    private readonly Matrix _lhsCachedJacobian;
-    private readonly Matrix _rhsCachedJacobian;
+    private readonly Vector _lhsCachedGradient;
+    private readonly Vector _rhsCachedGradient;
     private Vector _lhsValue;
     private Vector _rhsValue;
 
 
-    public BinaryOperationNode(Node lhs, Node rhs, int dimension, int graphRootDimension) : base(dimension)
+    public BinaryOperationNode(Node lhs, Node rhs, int dimension) : base(dimension)
     {
         _lhs = lhs;
         _rhs = rhs;
 
-        _lhsCachedJacobian = Matrix.CreateZero(graphRootDimension, lhs.Dimension);
-        _rhsCachedJacobian = Matrix.CreateZero(graphRootDimension, rhs.Dimension);
-
-        _lhsValue = null;
-        _rhsValue = null;
+        _lhsCachedGradient = Vector.CreateZero(lhs.Dimension);
+        _rhsCachedGradient = Vector.CreateZero(rhs.Dimension);
     }
 
     protected abstract Vector Function(Vector lhs, Vector rhs);
     protected abstract Matrix GetLeftJacobian(Vector lhs, Vector rhs);
     protected abstract Matrix GetRightJacobian(Vector lhs, Vector rhs);
 
-    public override void BackpropagateNext(Matrix previouseJacobian)
+    public override void BackpropagateNext(Vector gradient)
     {
-        Matrix.Multiply(previouseJacobian, GetLeftJacobian(_lhsValue, _rhsValue), _lhsCachedJacobian);
-        Matrix.Multiply(previouseJacobian, GetRightJacobian(_lhsValue, _rhsValue), _rhsCachedJacobian);
+        Matrix.Multiply(gradient, GetLeftJacobian(_lhsValue, _rhsValue), _lhsCachedGradient);
+        Matrix.Multiply(gradient, GetRightJacobian(_lhsValue, _rhsValue), _rhsCachedGradient);
 
-        _lhs.BackpropagateNext(_lhsCachedJacobian);
-        _rhs.BackpropagateNext(_rhsCachedJacobian);;
+        _lhs.BackpropagateNext(_lhsCachedGradient);
+        _rhs.BackpropagateNext(_rhsCachedGradient);
     }
 
     public override Vector CalculateValue()

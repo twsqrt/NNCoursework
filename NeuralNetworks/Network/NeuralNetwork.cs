@@ -11,8 +11,8 @@ public class NeuralNetwork
     private readonly ParameterNode[] _parameters;
     private readonly ParameterNode _input;
     private readonly Node _output;
-    private readonly Node _index;
-    private readonly ParameterNode _indexParameter;
+    private readonly LossNode _loss;
+    private readonly ParameterNode _lossParameter;
     private readonly Vector[] _cachedGradient;
 
     public ParameterNode Input => _input;
@@ -25,8 +25,8 @@ public class NeuralNetwork
         _input = input; 
         _output = output;
 
-        _indexParameter = ParameterNode.CreateZero(output.Dimension);
-        _index = new LossNode(_output, _indexParameter, 1);
+        _lossParameter = ParameterNode.CreateZero(output.Dimension);
+        _loss = new LossNode(_output, _lossParameter);
 
         _cachedGradient = new Vector[_parameters.Length];
         for(int i = 0; i < _cachedGradient.Length; i++)
@@ -50,16 +50,16 @@ public class NeuralNetwork
             }
 
             _input.Value = data[i];
-            _indexParameter.Value = markup[i];
+            _lossParameter.Value = markup[i];
 
-            _index.CalculateValue();
-            _index.Backpropagate();
+            _loss.CalculateValue();
+            _loss.Backpropagate();
 
             float learningRate = sgdMethod.CalculateLearningRate(_parameters, _cachedGradient);
 
             foreach(ParameterNode parameter in _parameters)
             {
-                Vector gradient = parameter.CurrentJacobian.AsVector();
+                Vector gradient = parameter.Gradient;
                 gradient.Scale(-1.0f * learningRate);
                 parameter.Value.Add(gradient);
             }

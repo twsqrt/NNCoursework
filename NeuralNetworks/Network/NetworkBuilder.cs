@@ -65,7 +65,7 @@ public class NetworkBuilder
             bool isFistLayer = _parameters.Count == 0;
 
             ParameterNode weights = ParameterNode.CreateRandom(numberOfNeurons * _currentRoot.Dimension, -1.0f, 1.0f);
-            var layer = new LayerNode(weights, _currentRoot, 1, ! isFistLayer);
+            var layer = new LayerNode(weights, _currentRoot, ! isFistLayer);
 
             _currentRoot = layer;
             _parameters.Add(weights);
@@ -76,7 +76,7 @@ public class NetworkBuilder
         private void AddBias(int numberOfNeurons)
         {
             ParameterNode bias = ParameterNode.CreateRandom(numberOfNeurons, -1.0f, 1.0f);
-            var add = new AdditionNode(_currentRoot, bias, 1);
+            var add = new AdditionNode(_currentRoot, bias);
 
             _currentRoot = add;
             _parameters.Add(bias);

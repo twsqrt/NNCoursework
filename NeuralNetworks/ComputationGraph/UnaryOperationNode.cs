@@ -4,14 +4,14 @@ namespace NeuralNetworks.ComputationGraph;
 public abstract class UnaryOperationNode : Node
 {
     private readonly Node _child;
-    private readonly Matrix _childCachedJacobian;
+    private readonly Vector _childCachedGradient;
 
     private Vector _childValue;
 
-    public UnaryOperationNode(Node child, int dimension, int graphRootDimension) : base(dimension)
+    public UnaryOperationNode(Node child, int dimension) : base(dimension)
     {
         _child = child;
-        _childCachedJacobian = Matrix.CreateZero(graphRootDimension, child.Dimension);
+        _childCachedGradient = Vector.CreateZero(child.Dimension);
 
         _childValue = null;
     }
@@ -19,12 +19,11 @@ public abstract class UnaryOperationNode : Node
     protected abstract Vector Function(Vector paraemter);
     protected abstract Matrix GetJacobian(Vector parameter);
 
-    public override void BackpropagateNext(Matrix previouseJacobian)
+    public override void BackpropagateNext(Vector gradient)
     {
         Matrix jacobian = GetJacobian(_childValue);
-        Matrix.Multiply(previouseJacobian, jacobian, _childCachedJacobian);
-
-        _child.BackpropagateNext(_childCachedJacobian);
+        Matrix.Multiply(gradient, jacobian, _childCachedGradient);
+        _child.BackpropagateNext(_childCachedGradient);
     }
 
     public override Vector CalculateValue()

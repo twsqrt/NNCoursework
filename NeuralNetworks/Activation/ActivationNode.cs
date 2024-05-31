@@ -55,16 +55,12 @@ public class ActivationNode : Node
     public static ActivationNode CreateCustorm(Node child, Func<float, float> function, Func<float, float> derivative)
         => new ActivationNode(child, function, derivative, ActivationType.CUSTOM);
 
-    public override void BackpropagateNext(Matrix previouseJacobian)
+    public override void BackpropagateNext(Vector gradient)
     {
-        for(int j = 0; j < previouseJacobian.Width; j++)
-        {
-            float diagonalElement = _derivative(_childResult[j]);
-            for(int i = 0; i < previouseJacobian.Height; i++)
-                previouseJacobian[i, j] *= diagonalElement;
-        }
+        for(int i = 0; i < gradient.Dimension; i++)
+            gradient[i] *= _derivative(_childResult[i]);
 
-        _child.BackpropagateNext(previouseJacobian);
+        _child.BackpropagateNext(gradient);
     }
 
     public override Vector CalculateValue()

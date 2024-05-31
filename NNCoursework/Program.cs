@@ -11,7 +11,10 @@ if(reply == "train")
     Console.Write("Learning rate: ");
     float learningRate = (float) Convert.ToDouble(Console.ReadLine());
 
-    Train.TrainNetwork(numberOfEpochs, learningRate);
+    Console.Write("File name: ");
+    string fileName = Console.ReadLine();
+
+    Train.TrainNetwork(numberOfEpochs, learningRate, fileName);
 }
 
 if(reply == "test")

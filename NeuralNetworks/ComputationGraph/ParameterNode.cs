@@ -6,16 +6,15 @@ public class ParameterNode : Node
 {
     private static readonly Random _random = new Random();
 
-    private Matrix _currentJacobian;
+    private Vector _gradient;
 
     public Vector Value { get; set; }
-    public Matrix CurrentJacobian => _currentJacobian;
+    public Vector Gradient => _gradient;
 
     public ParameterNode(Vector value) : base(value.Dimension)
     {
         Value = value;
-
-        _currentJacobian = null;
+        _gradient = null;
     }
 
     public static ParameterNode CreateZero(int dimension)
@@ -36,9 +35,9 @@ public class ParameterNode : Node
         return CreateFromArray(data);
     }
 
-    public override void BackpropagateNext(Matrix previouseJacobian)
+    public override void BackpropagateNext(Vector gradient)
     {
-        _currentJacobian = previouseJacobian;
+        _gradient = gradient;
     }
 
     public override Vector CalculateValue() => Value;

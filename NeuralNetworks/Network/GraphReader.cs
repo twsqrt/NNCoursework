@@ -32,7 +32,7 @@ public class GraphReader
         Node lhs = ReadGraph();
         Node rhs = ReadGraph();
 
-        return new AdditionNode(lhs, rhs, 1);
+        return new AdditionNode(lhs, rhs);
     }
 
     private Node ReadLayer()
@@ -47,7 +47,7 @@ public class GraphReader
         ParameterNode weights = ParameterNode.CreateFromArray(weightsData);
         Node child = ReadGraph();
 
-        return new LayerNode(weights, child, 1, shouldBackpropagateChild);
+        return new LayerNode(weights, child, shouldBackpropagateChild);
     }
 
     private Node ReadActivation()
