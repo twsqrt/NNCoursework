@@ -12,6 +12,6 @@ public class RegularSGD : ISGDMethod
         _learningRate = learningRate;
     }
 
-    public float CalculateLearningRate(ParameterNode[] parameter, Vector<float>[] gradient)
+    public float CalculateLearningRate(ParameterNode[] parameter, Vector[] gradient)
         => _learningRate;
 }

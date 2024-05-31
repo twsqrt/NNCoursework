@@ -20,13 +20,13 @@ public abstract class Node
         _idCounter++;
     }
 
-    public abstract void BackpropagateNext(Matrix<float> previouseJacobian);
+    public abstract void BackpropagateNext(Matrix previouseJacobian);
 
-    public abstract Vector<float> CalculateValue();
+    public abstract Vector CalculateValue();
 
     public abstract void Accept(INodeVisitor visitor);
 
     public void Backpropagate()
-        => BackpropagateNext(Matrix<float>.CreateIdentityMatrix(_dimension));
+        => BackpropagateNext(Matrix.CreateIdentity(_dimension));
 
 }

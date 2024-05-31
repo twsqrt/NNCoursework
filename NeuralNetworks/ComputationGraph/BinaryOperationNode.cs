@@ -6,10 +6,10 @@ public abstract class BinaryOperationNode : Node
 {
     private readonly Node _lhs;
     private readonly Node _rhs;
-    private readonly Matrix<float> _lhsCachedJacobian;
-    private readonly Matrix<float> _rhsCachedJacobian;
-    private Vector<float> _lhsValue;
-    private Vector<float> _rhsValue;
+    private readonly Matrix _lhsCachedJacobian;
+    private readonly Matrix _rhsCachedJacobian;
+    private Vector _lhsValue;
+    private Vector _rhsValue;
 
 
     public BinaryOperationNode(Node lhs, Node rhs, int dimension, int graphRootDimension) : base(dimension)
@@ -17,27 +17,27 @@ public abstract class BinaryOperationNode : Node
         _lhs = lhs;
         _rhs = rhs;
 
-        _lhsCachedJacobian = Matrix<float>.CreateZeroMatrix(graphRootDimension, lhs.Dimension);
-        _rhsCachedJacobian = Matrix<float>.CreateZeroMatrix(graphRootDimension, rhs.Dimension);
+        _lhsCachedJacobian = Matrix.CreateZero(graphRootDimension, lhs.Dimension);
+        _rhsCachedJacobian = Matrix.CreateZero(graphRootDimension, rhs.Dimension);
 
         _lhsValue = null;
         _rhsValue = null;
     }
 
-    protected abstract Vector<float> Function(Vector<float> lhs, Vector<float> rhs);
-    protected abstract Matrix<float> GetLeftJacobian(Vector<float> lhs, Vector<float> rhs);
-    protected abstract Matrix<float> GetRightJacobian(Vector<float> lhs, Vector<float> rhs);
+    protected abstract Vector Function(Vector lhs, Vector rhs);
+    protected abstract Matrix GetLeftJacobian(Vector lhs, Vector rhs);
+    protected abstract Matrix GetRightJacobian(Vector lhs, Vector rhs);
 
-    public override void BackpropagateNext(Matrix<float> previouseJacobian)
+    public override void BackpropagateNext(Matrix previouseJacobian)
     {
-        Matrix<float>.Multiply(previouseJacobian, GetLeftJacobian(_lhsValue, _rhsValue), _lhsCachedJacobian);
-        Matrix<float>.Multiply(previouseJacobian, GetRightJacobian(_lhsValue, _rhsValue), _rhsCachedJacobian);
+        Matrix.Multiply(previouseJacobian, GetLeftJacobian(_lhsValue, _rhsValue), _lhsCachedJacobian);
+        Matrix.Multiply(previouseJacobian, GetRightJacobian(_lhsValue, _rhsValue), _rhsCachedJacobian);
 
         _lhs.BackpropagateNext(_lhsCachedJacobian);
         _rhs.BackpropagateNext(_rhsCachedJacobian);;
     }
 
-    public override Vector<float> CalculateValue()
+    public override Vector CalculateValue()
     {
         _lhsValue = _lhs.CalculateValue();
         _rhsValue = _rhs.CalculateValue();

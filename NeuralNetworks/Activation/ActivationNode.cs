@@ -9,12 +9,11 @@ public class ActivationNode : Node
     private readonly Func<float, float> _function;
     private readonly Func<float, float> _derivative;
     private readonly ActivationType _type;
-    private readonly float[] _diagonalElements;
-    private Vector<float> _childValue;
-
-    public ActivationType Type => _type;
+    private readonly Vector _cachedResult;
+    private Vector _childResult;
 
     public Node Child => _child;
+    public ActivationType Type => _type;
     
     private ActivationNode(Node child, Func<float, float> function, Func<float, float> derivative, ActivationType type) 
     : base(child.Dimension)
@@ -24,8 +23,7 @@ public class ActivationNode : Node
         _derivative = derivative;
         _type = type;
 
-        _childValue = Vector<float>.CreateZeroVector(_child.Dimension);
-        _diagonalElements = new float[Dimension];
+        _cachedResult = Vector.CreateZero(Dimension);
     }
 
     public static ActivationNode Create(Node child, ActivationType type)
@@ -57,13 +55,11 @@ public class ActivationNode : Node
     public static ActivationNode CreateCustorm(Node child, Func<float, float> function, Func<float, float> derivative)
         => new ActivationNode(child, function, derivative, ActivationType.CUSTOM);
 
-    public override void BackpropagateNext(Matrix<float> previouseJacobian)
+    public override void BackpropagateNext(Matrix previouseJacobian)
     {
         for(int j = 0; j < previouseJacobian.Width; j++)
         {
-            float diagonalElement =  _derivative(_childValue[j]);
-            _diagonalElements[j] = diagonalElement;
-
+            float diagonalElement = _derivative(_childResult[j]);
             for(int i = 0; i < previouseJacobian.Height; i++)
                 previouseJacobian[i, j] *= diagonalElement;
         }
@@ -71,15 +67,13 @@ public class ActivationNode : Node
         _child.BackpropagateNext(previouseJacobian);
     }
 
-    public override Vector<float> CalculateValue()
+    public override Vector CalculateValue()
     {
-        _childValue = _child.CalculateValue();
-
-        var data = new float[Dimension];
-        for(int i = 0; i < data.Length; i++)
-            data[i] = _function(_childValue[i]);
+        _childResult = _child.CalculateValue();
+        for(int i = 0; i < _childResult.Dimension; i++)
+            _cachedResult[i] = _function(_childResult[i]);
            
-        return new Vector<float>(data);
+        return _cachedResult;
     }
 
     public override void Accept(INodeVisitor visitor)

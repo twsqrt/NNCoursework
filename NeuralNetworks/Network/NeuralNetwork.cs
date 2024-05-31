@@ -13,7 +13,7 @@ public class NeuralNetwork
     private readonly Node _output;
     private readonly Node _index;
     private readonly ParameterNode _indexParameter;
-    private readonly Vector<float>[] _cachedGradient;
+    private readonly Vector[] _cachedGradient;
 
     public ParameterNode Input => _input;
     public ParameterNode[] Parameters => _parameters;
@@ -26,17 +26,17 @@ public class NeuralNetwork
         _output = output;
 
         _indexParameter = ParameterNode.CreateZero(output.Dimension);
-        _index = new MetricNode(_output, _indexParameter, 1);
+        _index = new LossNode(_output, _indexParameter, 1);
 
-        _cachedGradient = new Vector<float>[_parameters.Length];
+        _cachedGradient = new Vector[_parameters.Length];
         for(int i = 0; i < _cachedGradient.Length; i++)
         {
             int dimension = _parameters[i].Dimension;
-            _cachedGradient[i] = Vector<float>.CreateZeroVector(dimension);
+            _cachedGradient[i] = Vector.CreateZero(dimension);
         }
     }
 
-    public void Fit(Vector<float>[] data, Vector<float>[] markup, ISGDMethod sgdMethod, Action<int> progressCallback)
+    public void Fit(Vector[] data, Vector[] markup, ISGDMethod sgdMethod, Action<int> progressCallback)
     {
         int percentInteger = 0;
 
@@ -59,19 +59,20 @@ public class NeuralNetwork
 
             foreach(ParameterNode parameter in _parameters)
             {
-                Vector<float> gradient = parameter.CurrentJacobian.AsVector();
-                parameter.Value.Add(gradient.Scale(-1.0f * learningRate));
+                Vector gradient = parameter.CurrentJacobian.AsVector();
+                gradient.Scale(-1.0f * learningRate);
+                parameter.Value.Add(gradient);
             }
         }
     }
 
-    public void Fit(Vector<float>[] data, Vector<float>[] markup, ISGDMethod sgdMethod, TextWriter log)
+    public void Fit(Vector[] data, Vector[] markup, ISGDMethod sgdMethod, TextWriter log)
         => Fit(data, markup, sgdMethod, percent => {
             if(percent % 5 == 0)
                 log.WriteLine($"Train progress: {percent}%");
         });
     
-    public void Fit(Vector<float>[] data, Vector<float>[] markup, ISGDMethod sgdMethod, int numberOfEpochs, TextWriter log)
+    public void Fit(Vector[] data, Vector[] markup, ISGDMethod sgdMethod, int numberOfEpochs, TextWriter log)
     {
         for(int i = 0; i < numberOfEpochs; i++)
         {
@@ -80,7 +81,7 @@ public class NeuralNetwork
         }
     }
 
-    public Vector<float> Execute(Vector<float> input)
+    public Vector Execute(Vector input)
     {
         _input.Value = input;
         return _output.CalculateValue();

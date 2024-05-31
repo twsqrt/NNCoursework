@@ -5,5 +5,5 @@ namespace NeuralNetworks.SDGMethod;
 
 public interface ISGDMethod
 {
-    float CalculateLearningRate(ParameterNode[] parameter, Vector<float>[] gradient);
+    float CalculateLearningRate(ParameterNode[] parameter, Vector[] gradient);
 }

@@ -11,12 +11,12 @@ public class TestUnaryOperationC : UnaryOperationNode
             throw new ArgumentException();
     }
 
-    protected override Vector<float> Function(Vector<float> parameter)
+    protected override Vector Function(Vector parameter)
     {
         (float x, float y) = (parameter[0], parameter[1]);
-        return new Vector<float>(new float[] {x + y + 1.0f});
+        return new Vector(new float[] {x + y + 1.0f});
     }
 
-    protected override Matrix<float> GetJacobian(Vector<float> parameter)
-        => new Matrix<float>(1, 2, new float[] {1.0f, 1.0f});
+    protected override Matrix GetJacobian(Vector parameter)
+        => new Matrix(1, 2, new float[] {1.0f, 1.0f});
 }

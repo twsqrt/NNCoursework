@@ -1,20 +1,17 @@
-﻿using System.Numerics;
+﻿namespace LinearAlgebra;
 
-namespace LinearAlgebra;
-
-public class Vector<T>
-    where T : INumber<T>
+public class Vector
 {
     private readonly int _dimension;
-    private readonly T[] _data;
+    private readonly float[] _data;
 
     public int Dimension => _dimension;
 
-    public T LengthSquared
+    public float LengthSquared
     {
         get 
         {
-            T sum = T.Zero;
+            float sum = 0.0f;
             for(int i = 0; i < _dimension; i++)
                 sum += _data[i] * _data[i];
 
@@ -22,51 +19,50 @@ public class Vector<T>
         }
     }
 
-    public T this[int index]
+    public float this[int i]
     {
-        get => _data[index];
-        set => _data[index] = value;
+        get => _data[i];
+        set => _data[i] = value;
     }
 
-    public Vector(T[] data)
+    public Vector(float[] data)
     {
         _dimension = data.Length;
         _data = data;
     }
 
-    public static Vector<T> CreateZeroVector(int length)
-        => new Vector<T>(Enumerable.Range(0, length).Select(_ => T.Zero).ToArray());
+    public static Vector CreateZero(int length)
+    {
+        var data = new float[length];
+        Array.Fill(data, 0.0f);
+        return new Vector(data);
+    }
     
-    public static Vector<T> Create1DVector(T value)
-        => new Vector<T>(new T[] {value});
+    public static Vector Create1D(float value)
+    {
+        var data = new float[]{ value };
+        return new Vector(data);
+    }
 
-    public void Add(Vector<T> vector)
+    public void Add(Vector vector)
     {
         for(int i = 0; i < _dimension; i++)
-            _data[i] += vector[i];
+            _data[i] += vector._data[i];
     }
 
-    public void SetZero()
-    {
-        for(int i = 0; i <_dimension; i++)
-            _data[i] = T.Zero;
-    }
-
-    public Vector<T> Scale(T value)
+    public void Scale(float value)
     {
         for(int i = 0; i < _dimension; i++)
             _data[i] *= value;
-        
-        return this;
     }
     
-    public void CopyValuesFrom(Vector<T> value)
+    public void CopyValuesFrom(Vector value)
     {
         for(int i = 0; i < _data.Length; i++)
             _data[i] = value._data[i];
     }
 
-    public T ToNumber()
+    public float ToNumber()
     {
         if(_dimension != 1)
             throw new InvalidOperationException();
@@ -74,39 +70,18 @@ public class Vector<T>
         return _data[0];
     }
 
-    public Matrix<T> AsHorizontalMatrix()
-        => new Matrix<T>(1, _dimension, _data);
-    
-    public Matrix<T> AsMatrix(int height, int width)
-        => new Matrix<T>(height, width, _data);
+    public Matrix AsMatrix(int height, int width)
+        => new Matrix(height, width, _data);
 
-    public static void Addition(Vector<T> lhs, Vector<T> rhs, Vector<T> result)
+    public static void Addition(Vector lhs, Vector rhs, Vector result)
     {
         for(int i = 0; i < result._data.Length; i++)
             result._data[i] = lhs._data[i] + rhs._data[i];
     }
     
-    public static void Difference(Vector<T> lhs, Vector<T> rhs, Vector<T> result)
+    public static void Difference(Vector lhs, Vector rhs, Vector result)
     {
         for(int i = 0; i < result._data.Length; i++)
             result._data[i] = lhs._data[i] - rhs._data[i];
-    }
-
-    public static Vector<T> operator +(Vector<T> lhs, Vector<T> rhs)
-    {
-        var _data = new T[lhs.Dimension];
-        for(int i = 0; i < _data.Length; i++)
-            _data[i] = lhs[i] + rhs[i];
-
-        return new Vector<T>(_data);
-    }
-
-    public static Vector<T> operator -(Vector<T> lhs, Vector<T> rhs)
-    {
-        var _data = new T[lhs.Dimension];
-        for(int i = 0; i < _data.Length; i++)
-            _data[i] = lhs[i] - rhs[i];
-
-        return new Vector<T>(_data);
     }
 }

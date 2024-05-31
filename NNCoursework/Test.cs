@@ -37,9 +37,9 @@ public static class Test
                 for(int j = 0; j < IMAGE_SIZE; j++)
                     dataArray[j] = csv.GetField<float>(j + 1) / 255;
                 
-                var input = new Vector<float>(dataArray);
+                var input = new Vector(dataArray);
 
-                Vector<float> output = network.Execute(input);
+                Vector output = network.Execute(input);
 
                 float maxElement = 0.0f;
                 int outputNumber = 0;

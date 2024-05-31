@@ -6,8 +6,8 @@ public class AdditionNode : Node
 {
     private readonly Node _lhs;
     private readonly Node _rhs;
-    private readonly Matrix<float> _rhsCachedJacobian;
-    private readonly Vector<float> _additionCachedResult;
+    private readonly Matrix _rhsCachedJacobian;
+    private readonly Vector _cachedResult;
 
     public Node LeftNode => _lhs;
     public Node RightNode => _rhs;
@@ -19,11 +19,11 @@ public class AdditionNode : Node
 
         _lhs = lhs;
         _rhs = rhs;
-        _rhsCachedJacobian = Matrix<float>.CreateZeroMatrix(graphRootDimension, Dimension);
-        _additionCachedResult = Vector<float>.CreateZeroVector(Dimension);
+        _rhsCachedJacobian = Matrix.CreateZero(graphRootDimension, Dimension);
+        _cachedResult = Vector.CreateZero(Dimension);
     }
 
-    public override void BackpropagateNext(Matrix<float> previouseJacobian)
+    public override void BackpropagateNext(Matrix previouseJacobian)
     {
         _rhsCachedJacobian.CopyValuesFrom(previouseJacobian);
 
@@ -31,10 +31,10 @@ public class AdditionNode : Node
         _rhs.BackpropagateNext(_rhsCachedJacobian);
     }
 
-    public override Vector<float> CalculateValue()
+    public override Vector CalculateValue()
     {
-        Vector<float>.Addition(_lhs.CalculateValue(), _rhs.CalculateValue(), _additionCachedResult);
-        return _additionCachedResult;
+        Vector.Addition(_lhs.CalculateValue(), _rhs.CalculateValue(), _cachedResult);
+        return _cachedResult;
     }
 
     public override void Accept(INodeVisitor visitor)

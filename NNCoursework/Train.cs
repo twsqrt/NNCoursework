@@ -15,10 +15,10 @@ public static class Train
     const int TRAIN_SIZE = 60000;
     const int IMAGE_SIZE = 28 * 28;
 
-    private static void ReadData(out Vector<float>[] data, out Vector<float>[] markup)
+    private static void ReadData(out Vector[] data, out Vector[] markup)
     {
-        data = new Vector<float>[TRAIN_SIZE];
-        markup = new Vector<float>[TRAIN_SIZE];
+        data = new Vector[TRAIN_SIZE];
+        markup = new Vector[TRAIN_SIZE];
 
         using (var reader = new StreamReader(mnistTrainFile)) 
         using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture)) 
@@ -38,7 +38,7 @@ public static class Train
                 csv.Read();
 
                 int number = csv.GetField<int>(0);
-                Vector<float> vector = Vector<float>.CreateZeroVector(10);
+                Vector vector = Vector.CreateZero(10);
                 vector[number] = 1.0f;
                 markup[i] = vector;
 
@@ -46,7 +46,7 @@ public static class Train
                 for(int j = 0; j < IMAGE_SIZE; j++)
                     dataArray[j] = csv.GetField<float>(j + 1) / 255;
 
-                data[i] = new Vector<float>(dataArray);
+                data[i] = new Vector(dataArray);
             }
         }
     }
@@ -54,7 +54,7 @@ public static class Train
     public static void TrainNetwork(int numberOfEpochs, float learningRate)
     {
 
-        Vector<float>[] data, markup;
+        Vector[] data, markup;
         ReadData(out data, out markup);
 
         var builder = new NetworkBuilder();
@@ -73,7 +73,7 @@ public static class Train
 
         network.Fit(data, markup, sgdMethod, numberOfEpochs, Console.Out);
 
-        string networkFileName = $"mnist_network_epochs_{numberOfEpochs}.bin";
+        string networkFileName = $"mnist_network_ep{numberOfEpochs}.bin";
         using(var stream = File.OpenWrite(Path.Combine(networkFileDirectory, networkFileName)))
         using(var writer = new BinaryWriter(stream))
             network.Export(writer);

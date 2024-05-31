@@ -6,11 +6,12 @@ public class ParameterNode : Node
 {
     private static readonly Random _random = new Random();
 
-    private Matrix<float> _currentJacobian;
+    private Matrix _currentJacobian;
 
-    public Matrix<float> CurrentJacobian => _currentJacobian;
+    public Vector Value { get; set; }
+    public Matrix CurrentJacobian => _currentJacobian;
 
-    public ParameterNode(Vector<float> value) : base(value.Dimension)
+    public ParameterNode(Vector value) : base(value.Dimension)
     {
         Value = value;
 
@@ -18,31 +19,29 @@ public class ParameterNode : Node
     }
 
     public static ParameterNode CreateZero(int dimension)
-        => new ParameterNode(Vector<float>.CreateZeroVector(dimension));
+        => new ParameterNode(Vector.CreateZero(dimension));
     
     public static ParameterNode CreateFromArray(float[] data)
-        => new ParameterNode(new Vector<float>(data));
+        => new ParameterNode(new Vector(data));
     
     public static ParameterNode CreateRandom(int dimension, float cordMinValue = 0.0f, float cordMaxValue = 1.0f)
     {
         var data = new float[dimension];
         for(int i = 0; i < data.Length; i++)
         {
-            float cord = (float) _random.NextDouble() * (cordMaxValue - cordMinValue) + cordMinValue;
-            data[i] = cord;
+            float element = (float) _random.NextDouble() * (cordMaxValue - cordMinValue) + cordMinValue;
+            data[i] = element;
         }
 
-        return new ParameterNode(new Vector<float>(data));
+        return CreateFromArray(data);
     }
 
-    public Vector<float> Value { get; set; }
-
-    public override void BackpropagateNext(Matrix<float> previouseJacobian)
+    public override void BackpropagateNext(Matrix previouseJacobian)
     {
         _currentJacobian = previouseJacobian;
     }
 
-    public override Vector<float> CalculateValue() => Value;
+    public override Vector CalculateValue() => Value;
 
     public override void Accept(INodeVisitor visitor)
         => visitor.Visit(this);

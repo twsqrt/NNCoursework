@@ -6,12 +6,12 @@ public class LayerNode : Node
 {
     private readonly Node _child;
     private readonly ParameterNode _weights;
-    private readonly Matrix<float> _weightsMatrix;
-    private readonly Matrix<float> _weightsCachedJacobian;
-    private readonly Matrix<float> _childCachedJacobian;
+    private readonly Matrix _weightsMatrix;
+    private readonly Matrix _weightsCachedJacobian;
+    private readonly Matrix _childCachedJacobian;
     private readonly bool _shouldBackpropagateChild;
-
-    private Vector<float> _childValue;
+    private readonly Vector _cachedResult;
+    private Vector _childValue;
 
     public ParameterNode Weights => _weights;
     public Node Child => _child;
@@ -24,25 +24,24 @@ public class LayerNode : Node
             throw new ArgumentException();
         
         _child = child;
-        _weights = weights;
+        _childValue = null;
 
+        _weights = weights;
         _weightsMatrix = _weights.Value.AsMatrix(Dimension, _child.Dimension);
-        _weightsCachedJacobian = Matrix<float>.CreateZeroMatrix(graphRootDimension, weights.Dimension);
+        _weightsCachedJacobian = Matrix.CreateZero(graphRootDimension, weights.Dimension);
+
+        _cachedResult = Vector.CreateZero(Dimension);
 
         _shouldBackpropagateChild = shouldBackpropagateChild;
-        if(_shouldBackpropagateChild)
-            _childCachedJacobian = Matrix<float>.CreateZeroMatrix(graphRootDimension, child.Dimension);
-        else
-            _childCachedJacobian = null;
 
-
-        _childValue = null;
+        if(shouldBackpropagateChild)
+            _childCachedJacobian = Matrix.CreateZero(graphRootDimension, child.Dimension);
     }
 
     public override void Accept(INodeVisitor visitor)
         => visitor.Visit(this);
 
-    public override void BackpropagateNext(Matrix<float> previouseJacobian)
+    public override void BackpropagateNext(Matrix previouseJacobian)
     {
         int weightsWidth = _weightsMatrix.Width;
         for(int i = 0; i < _weightsCachedJacobian.Height; i++)
@@ -58,14 +57,15 @@ public class LayerNode : Node
 
         if(_shouldBackpropagateChild)
         {
-            Matrix<float>.Multiply(previouseJacobian, _weightsMatrix, _childCachedJacobian);
+            Matrix.Multiply(previouseJacobian, _weightsMatrix, _childCachedJacobian);
             _child.BackpropagateNext(_childCachedJacobian);
         }
     }
 
-    public override Vector<float> CalculateValue()
+    public override Vector CalculateValue()
     {
         _childValue = _child.CalculateValue();
-        return _weightsMatrix.ApplyTo(_childValue);
+        Matrix.Multiply(_weightsMatrix, _childValue, _cachedResult);
+        return _cachedResult;
     }
 }
