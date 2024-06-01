@@ -6,6 +6,7 @@ public class Vector
     private readonly float[] _data;
 
     public int Dimension => _dimension;
+    public float[] Data => _data;
 
     public float LengthSquared
     {

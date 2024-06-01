@@ -27,30 +27,24 @@ public class Tensor
         return new Matrix(Shape.Height, Shape.Width, _data, dataStartIndex);
     }
 
-    public Tensor(float[] data, int height, int width = 1, int depth = 1)
+    public Tensor(float[] data, TensorShape shape)
     {
-        if(height * width * depth != data.Length)
+        if(shape.Dimension != data.Length)
             throw new ArgumentException();
         
         _data = data;
-        _shape = new TensorShape(height, width, depth);
+        _shape = shape;
     }
     
-    public static Tensor Create1DShape(float[] data)
-        => new Tensor(data, data.Length);
-
-    public static Tensor Create2DShape(float[] data, int height, int width)
-        => new Tensor(data, height, width);
-
-    public static Tensor CreateZero(int height, int width = 1, int depth = 1)
-    {
-        var data = new float[height * width * depth];
-        Array.Fill(data, 0.0f);
-        return new Tensor(data, height, width, depth);
-    }
-
     public static Tensor CreateZero(TensorShape shape)
-        => CreateZero(shape.Height, shape.Width, shape.Depth);
+    {
+        var data = new float[shape.Dimension];
+        Array.Fill(data, 0.0f);
+        return new Tensor(data, shape);
+    }
+     
+    public Vector AsVector()
+        => new Vector(_data);
 
     public void Scale(float scalar)
     {

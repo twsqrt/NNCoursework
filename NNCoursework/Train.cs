@@ -57,23 +57,25 @@ public static class Train
         ReadData(out data, out markup);
 
         var input = new DataNode(IMAGE_SIZE);
+        var matrixInput = new VectorToMatrixNode(input, 28, 28);
+
+        var parameter0 = DataNode.CreateRandom(5 * 5 * 8);
+        var kernel = new VectorToTensor(parameter0, new TensorShape(5, 5, 8));
+        var conv = new Convolution2DNode(matrixInput, kernel, false);
+        var maxpool = new MaxPool2DNode(conv, 2, 2);
+        var convOutput = new TensorToVectorNode(maxpool);
         
-        var parameter1 = DataNode.CreateRandom(200 * IMAGE_SIZE);
-        var reshape1 = new VectorToMatrixNode(parameter1, 200, IMAGE_SIZE);
-        var layer1 = new LayerNode(reshape1, input, false);
+        var parameter1 = DataNode.CreateRandom(1152 * 100);
+        var reshape1 = new VectorToMatrixNode(parameter1, 100, 1152);
+        var layer1 = new LayerNode(reshape1, convOutput);
         var activation1 = ActivationNode.Create(layer1, ActivationType.LOGSIG);
 
-        var parameter2 = DataNode.CreateRandom(80 * 200);
-        var reshape2 = new VectorToMatrixNode(parameter2, 80, 200);
-        var layer2 = new LayerNode(reshape2, activation1, true);
+        var parameter2 = DataNode.CreateRandom(100 * 10);
+        var reshape2 = new VectorToMatrixNode(parameter2, 10, 100);
+        var layer2 = new LayerNode(reshape2, activation1);
         var activation2 = ActivationNode.Create(layer2, ActivationType.LOGSIG);
 
-        var parameter3 = DataNode.CreateRandom(80 * 10);
-        var reshape3 = new VectorToMatrixNode(parameter3, 10, 80);
-        var layer3 = new LayerNode(reshape3, activation2, true);
-        var activation3 = ActivationNode.Create(layer3, ActivationType.LOGSIG);
-
-        var network = new NeuralNetwork(input, new[] {parameter1, parameter2, parameter3}, activation3);
+        var network = new NeuralNetwork(input, new[] {parameter0, parameter1, parameter2}, activation2);
         network.Fit(data, markup, learningRate, numberOfEpochs, Console.Out);
         return network;
     }

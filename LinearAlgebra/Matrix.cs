@@ -135,4 +135,24 @@ public class Matrix
             result[i, j] = sum;
         }
     }
+
+    public static void MaxPool(Matrix matrix, int kernelHeight, int kernelWidth, Matrix result)
+    {
+        for(int i = 0; i < result.Height; i++)
+        for(int j = 0; j < result.Width; j++)
+        {
+            float max = matrix[i, j];
+
+            for(int k = 0; k < kernelHeight; k++)
+            for(int l = 0; l < kernelWidth; l++)
+            {
+                float element = matrix[i + k, j + l];
+                if(max < element)
+                    max = element;
+            }
+            
+            result[i, j] = max;
+        }
+
+    }
 }
