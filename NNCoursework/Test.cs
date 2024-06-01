@@ -15,14 +15,8 @@ public static class Test
     const int TEST_SIZE = 4451;
     const int IMAGE_SIZE = 28 * 28;
 
-    public static void TestNetwork(string networkFileName)
+    public static void TestNetwork(NeuralNetwork network)
     {
-        NeuralNetwork network;
-
-        using(var stream = File.OpenRead(Path.Combine(networkFileDirectory, networkFileName)))
-        using(var reader = new BinaryReader(stream))
-            network = NeuralNetwork.Import(reader);
-
         int correctCount = 0;
         using (var reader = new StreamReader(mnistTestFile)) 
         using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture)) 

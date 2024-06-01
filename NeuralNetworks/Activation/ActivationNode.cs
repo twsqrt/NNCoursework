@@ -3,30 +3,30 @@ using NeuralNetworks.ComputationGraph;
 
 namespace NeuralNetworks.Activation;
 
-public class ActivationNode : Node
+public class ActivationNode : Node<Vector>
 {
-    private readonly Node _child;
+    private readonly Node<Vector> _child;
     private readonly Func<float, float> _function;
     private readonly Func<float, float> _derivative;
     private readonly ActivationType _type;
     private readonly Vector _cachedResult;
     private Vector _childResult;
 
-    public Node Child => _child;
+    public Node<Vector> Child => _child;
     public ActivationType Type => _type;
     
-    private ActivationNode(Node child, Func<float, float> function, Func<float, float> derivative, ActivationType type) 
-    : base(child.Dimension)
+    private ActivationNode(Node<Vector> child, Func<float, float> function, Func<float, float> derivative, ActivationType type) 
+    : base(child.Shape)
     {
         _child = child;
         _function = function;
         _derivative = derivative;
         _type = type;
 
-        _cachedResult = Vector.CreateZero(Dimension);
+        _cachedResult = Vector.CreateZero(Shape.Height);
     }
 
-    public static ActivationNode Create(Node child, ActivationType type)
+    public static ActivationNode Create(Node<Vector> child, ActivationType type)
     => type switch
     {
         ActivationType.PURELIN => new ActivationNode(child, x => x, x => 1.0f, type),
@@ -52,7 +52,7 @@ public class ActivationNode : Node
         _  => throw new NotImplementedException(),
     };
 
-    public static ActivationNode CreateCustorm(Node child, Func<float, float> function, Func<float, float> derivative)
+    public static ActivationNode CreateCustorm(Node<Vector> child, Func<float, float> function, Func<float, float> derivative)
         => new ActivationNode(child, function, derivative, ActivationType.CUSTOM);
 
     public override void BackpropagateNext(Vector gradient)

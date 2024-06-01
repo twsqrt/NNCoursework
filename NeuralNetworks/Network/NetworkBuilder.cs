@@ -37,84 +37,84 @@ public interface IBuild
 
 public class NetworkBuilder
 {
-    private class Iner
-    : ISpecifyInput, ISpecifyNextLayerOrOutput, ISpecifyActivationFunctionOrOutput, IBuild
-    {
-        private readonly List<ParameterNode> _parameters;
-        private ParameterNode _input;
-        private Node _currentRoot;
+    // private class Iner
+    // : ISpecifyInput, ISpecifyNextLayerOrOutput, ISpecifyActivationFunctionOrOutput, IBuild
+    // {
+    //     private readonly List<ParameterNode> _parameters;
+    //     private ParameterNode _input;
+    //     private VectorNode _currentRoot;
 
-        public Iner()
-        {
-            _parameters = new List<ParameterNode>();
-            _input = null;
-            _currentRoot = null;
-        }
+    //     public Iner()
+    //     {
+    //         _parameters = new List<ParameterNode>();
+    //         _input = null;
+    //         _currentRoot = null;
+    //     }
 
-        public NeuralNetwork Build()
-        {
-            var network = new NeuralNetwork(_input, _parameters.ToArray(), _currentRoot);
+    //     public NeuralNetwork Build()
+    //     {
+    //         var network = new NeuralNetwork(_input, _parameters.ToArray(), _currentRoot);
 
-            _parameters.Clear();
+    //         _parameters.Clear();
 
-            return network;
-        }
+    //         return network;
+    //     }
 
-        public ISpecifyActivationFunctionOrOutput ToLayerWithoutBias(int numberOfNeurons)
-        {
-            bool isFistLayer = _parameters.Count == 0;
+    //     public ISpecifyActivationFunctionOrOutput ToLayerWithoutBias(int numberOfNeurons)
+    //     {
+    //         bool isFistLayer = _parameters.Count == 0;
 
-            ParameterNode weights = ParameterNode.CreateRandom(numberOfNeurons * _currentRoot.Dimension, -1.0f, 1.0f);
-            var layer = new LayerNode(weights, _currentRoot, ! isFistLayer);
+    //         ParameterNode weights = ParameterNode.CreateRandom(numberOfNeurons * _currentRoot.Dimension, -1.0f, 1.0f);
+    //         var layer = new LayerNode(weights, _currentRoot, ! isFistLayer);
 
-            _currentRoot = layer;
-            _parameters.Add(weights);
+    //         _currentRoot = layer;
+    //         _parameters.Add(weights);
 
-            return this;
-        }
+    //         return this;
+    //     }
 
-        private void AddBias(int numberOfNeurons)
-        {
-            ParameterNode bias = ParameterNode.CreateRandom(numberOfNeurons, -1.0f, 1.0f);
-            var add = new AdditionNode(_currentRoot, bias);
+    //     private void AddBias(int numberOfNeurons)
+    //     {
+    //         ParameterNode bias = ParameterNode.CreateRandom(numberOfNeurons, -1.0f, 1.0f);
+    //         var add = new AdditionNode(_currentRoot, bias);
 
-            _currentRoot = add;
-            _parameters.Add(bias);
-        }
+    //         _currentRoot = add;
+    //         _parameters.Add(bias);
+    //     }
 
-        public ISpecifyActivationFunctionOrOutput ToLayer(int numberOfNeurons)
-        {
-            ToLayerWithoutBias(numberOfNeurons);
-            AddBias(numberOfNeurons);
+    //     public ISpecifyActivationFunctionOrOutput ToLayer(int numberOfNeurons)
+    //     {
+    //         ToLayerWithoutBias(numberOfNeurons);
+    //         AddBias(numberOfNeurons);
 
-            return this;
-        }
+    //         return this;
+    //     }
 
-        public IBuild ToOutput() => this;
+    //     public IBuild ToOutput() => this;
 
-        public ISpecifyLayer WithInput(int numberOfNeurons)
-        {
-            _input = ParameterNode.CreateZero(numberOfNeurons);
-            _currentRoot = _input;
+    //     public ISpecifyLayer WithInput(int numberOfNeurons)
+    //     {
+    //         _input = ParameterNode.CreateZero(numberOfNeurons);
+    //         _currentRoot = _input;
 
-            return this;
-        }
+    //         return this;
+    //     }
 
-        public ISpecifyNextLayerOrOutput WithActivationFunction(ActivationType type)
-        {
-            ActivationNode transfer = ActivationNode.Create(_currentRoot, type);
-            _currentRoot = transfer;
+    //     public ISpecifyNextLayerOrOutput WithActivationFunction(ActivationType type)
+    //     {
+    //         ActivationNode transfer = ActivationNode.Create(_currentRoot, type);
+    //         _currentRoot = transfer;
 
-            return this;
-        }
-    }
+    //         return this;
+    //     }
+    // }
 
-    private readonly Iner _iner;
+    // private readonly Iner _iner;
 
-    public NetworkBuilder()
-    {
-        _iner = new Iner();
-    }
+    // public NetworkBuilder()
+    // {
+    //     _iner = new Iner();
+    // }
 
-    public ISpecifyInput Create() => _iner;
+    // public ISpecifyInput Create() => _iner;
 }

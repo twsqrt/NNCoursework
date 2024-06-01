@@ -3,43 +3,39 @@ using NeuralNetworks.ComputationGraph;
 
 namespace NeuralNetworks;
 
-public class LossNode : Node
+public class LossNode : Node<float>
 {
-    private readonly ParameterNode _parameter;
-    private readonly Node _child;
-    private readonly Vector _childCachedGradient;
+    private readonly Node<Vector> _output;
+    private readonly Node<Vector> _markup;
     private Vector _difference;
-    private Matrix _differenceCachedJacobian;
 
-    public LossNode(Node child, ParameterNode parameter) : base(1)
+    public LossNode(Node<Vector> output, Node<Vector> markup) 
+    : base(new TensorShape(1))
     {
-        if(child.Dimension != parameter.Dimension)
+        if(output.Shape != markup.Shape)
             throw new ArgumentException();
 
-        _child = child;
-        _parameter = parameter;
+        _output = output;
+        _markup = markup;
 
-        _childCachedGradient = Vector.CreateZero(child.Dimension);
-
-        _difference = Vector.CreateZero(parameter.Dimension);
-        _differenceCachedJacobian = _difference.AsMatrix(1, _difference.Dimension);
+        _difference = Vector.CreateZero(output.Shape.Height);
     }
 
     public override void Accept(INodeVisitor visitor)
-        => throw new NotImplementedException();
+        => throw new InvalidOperationException();
 
     public override void BackpropagateNext(Vector gradient)
         => throw new InvalidOperationException();
 
-    public override Vector CalculateValue()
+    public override float CalculateValue()
     {
-        Vector.Difference(_child.CalculateValue(), _parameter.Value, _difference);
-        return Vector.Create1D(_difference.LengthSquared);
+        Vector.Difference(_output.CalculateValue(), _markup.CalculateValue(), _difference);
+        return _difference.LengthSquared;
     }
 
     public void Backpropagate()
     {
         _difference.Scale(2.0f);
-        _child.BackpropagateNext(_difference);
+        _output.BackpropagateNext(_difference);
     }
 }

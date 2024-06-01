@@ -1,42 +1,28 @@
 ﻿using LinearAlgebra;
 using NeuralNetworks.ComputationGraph;
-using NeuralNetworks.File;
-using NeuralNetworks.SDGMethod;
 
 
 namespace NeuralNetworks.Network;
 
 public class NeuralNetwork
 {
-    private readonly ParameterNode[] _parameters;
-    private readonly ParameterNode _input;
-    private readonly Node _output;
+    private readonly DataNode _input;
+    private readonly DataNode[] _parameters;
+    private readonly Node<Vector> _output;
     private readonly LossNode _loss;
-    private readonly ParameterNode _lossParameter;
-    private readonly Vector[] _cachedGradient;
+    private readonly DataNode _lossMarkup;
 
-    public ParameterNode Input => _input;
-    public ParameterNode[] Parameters => _parameters;
-    public Node Output => _output;
-
-    public NeuralNetwork(ParameterNode input, ParameterNode[] parameters, Node output)
+    public NeuralNetwork(DataNode input, DataNode[] parameters, Node<Vector> output)
     {
+        _input = input;
         _parameters = parameters;
-        _input = input; 
         _output = output;
 
-        _lossParameter = ParameterNode.CreateZero(output.Dimension);
-        _loss = new LossNode(_output, _lossParameter);
-
-        _cachedGradient = new Vector[_parameters.Length];
-        for(int i = 0; i < _cachedGradient.Length; i++)
-        {
-            int dimension = _parameters[i].Dimension;
-            _cachedGradient[i] = Vector.CreateZero(dimension);
-        }
+        _lossMarkup = new DataNode(_output.Shape.Dimension);
+        _loss = new LossNode(output, _lossMarkup);
     }
 
-    public void Fit(Vector[] data, Vector[] markup, ISGDMethod sgdMethod, Action<int> progressCallback)
+    public void Fit(Vector[] data, Vector[] markup, float learningRate, Action<int> progressCallback)
     {
         int percentInteger = 0;
 
@@ -49,47 +35,42 @@ public class NeuralNetwork
                 percentInteger++;
             }
 
-            _input.Value = data[i];
-            _lossParameter.Value = markup[i];
+            _input.Data = data[i];
+            _lossMarkup.Data = markup[i];
 
-            _loss.CalculateValue();
+            float loss = _loss.CalculateValue();
+            if(float.IsNaN(loss))
+                throw new ArgumentException();
+
             _loss.Backpropagate();
 
-            float learningRate = sgdMethod.CalculateLearningRate(_parameters, _cachedGradient);
-
-            foreach(ParameterNode parameter in _parameters)
+            foreach(DataNode parameter in _parameters)
             {
                 Vector gradient = parameter.Gradient;
                 gradient.Scale(-1.0f * learningRate);
-                parameter.Value.Add(gradient);
+                parameter.Data.Add(gradient);
             }
         }
     }
 
-    public void Fit(Vector[] data, Vector[] markup, ISGDMethod sgdMethod, TextWriter log)
-        => Fit(data, markup, sgdMethod, percent => {
+    public void Fit(Vector[] data, Vector[] markup, float learningRate, TextWriter log)
+        => Fit(data, markup, learningRate, percent => {
             if(percent % 5 == 0)
                 log.WriteLine($"Train progress: {percent}%");
         });
     
-    public void Fit(Vector[] data, Vector[] markup, ISGDMethod sgdMethod, int numberOfEpochs, TextWriter log)
+    public void Fit(Vector[] data, Vector[] markup, float learningRate, int numberOfEpochs, TextWriter log)
     {
         for(int i = 0; i < numberOfEpochs; i++)
         {
             log.WriteLine($"Epoch number: {i + 1}");
-            Fit(data, markup, sgdMethod, log);
+            Fit(data, markup, learningRate, log);
         }
     }
 
     public Vector Execute(Vector input)
     {
-        _input.Value = input;
+        _input.Data = input;
         return _output.CalculateValue();
     }
-
-    public static NeuralNetwork Import(BinaryReader reader)
-        => NetworkFileManager.Read(reader);
-
-    public void Export(BinaryWriter writer)
-        => NetworkFileManager.Write(this, writer);
 }

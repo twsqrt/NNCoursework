@@ -5,7 +5,7 @@ namespace NeuralNetworks;
 
 public interface INodeVisitor
 {
-    void Visit(ParameterNode parameter);
+    void Visit(DataNode data);
     void Visit(AdditionNode addition);
     void Visit(LayerNode layer);
     void Visit(ActivationNode activation);

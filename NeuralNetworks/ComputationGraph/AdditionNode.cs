@@ -2,25 +2,26 @@ using LinearAlgebra;
 
 namespace NeuralNetworks.ComputationGraph;
 
-public class AdditionNode : Node
+public class AdditionNode : Node<Vector>
 {
-    private readonly Node _lhs;
-    private readonly Node _rhs;
+    private readonly Node<Vector> _lhs;
+    private readonly Node<Vector> _rhs;
     private readonly Vector _rhsCachedGradient;
     private readonly Vector _cachedResult;
 
-    public Node LeftNode => _lhs;
-    public Node RightNode => _rhs;
+    public Node<Vector> LeftNode => _lhs;
+    public Node<Vector> RightNode => _rhs;
 
-    public AdditionNode(Node lhs, Node rhs) : base(lhs.Dimension)
+    public AdditionNode(Node<Vector> lhs, Node<Vector> rhs) : base(lhs.Shape)
     {
-        if(lhs.Dimension != rhs.Dimension)
+        if(lhs.Shape != rhs.Shape)
             throw new ArgumentException();
 
         _lhs = lhs;
         _rhs = rhs;
-        _rhsCachedGradient = Vector.CreateZero(Dimension);
-        _cachedResult = Vector.CreateZero(Dimension);
+
+        _rhsCachedGradient = Vector.CreateZero(Shape.Height);
+        _cachedResult = Vector.CreateZero(Shape.Height);
     }
 
     public override void BackpropagateNext(Vector gradient)

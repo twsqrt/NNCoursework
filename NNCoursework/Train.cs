@@ -1,8 +1,9 @@
 ﻿using System.Globalization;
 using CsvHelper;
 using LinearAlgebra;
+using NeuralNetworks;
 using NeuralNetworks.Activation;
-using NeuralNetworks.SDGMethod;
+using NeuralNetworks.ComputationGraph;
 using NeuralNetworks.Network;
 
 public static class Train
@@ -10,7 +11,6 @@ public static class Train
     private const string PROJECT_DIRECTORY = @"C:\Users\twsqrt\source\repos\NNCoursework";
     private static string mnistDataDirectory = Path.Combine(PROJECT_DIRECTORY, "MNIST");
     private static string mnistTrainFile = Path.Combine(mnistDataDirectory, "mnist_train.csv");
-    private static string networkFileDirectory = Path.Combine(PROJECT_DIRECTORY, "Networks");
 
     const int TRAIN_SIZE = 60000;
     const int IMAGE_SIZE = 28 * 28;
@@ -51,30 +51,30 @@ public static class Train
         }
     }
 
-    public static void TrainNetwork(int numberOfEpochs, float learningRate, string fileName)
+    public static NeuralNetwork TrainNetwork(int numberOfEpochs, float learningRate)
     {
-
         Vector[] data, markup;
         ReadData(out data, out markup);
 
-        var builder = new NetworkBuilder();
-        NeuralNetwork network = builder.Create()
-            .WithInput(IMAGE_SIZE)
-            .ToLayer(200)
-            .WithActivationFunction(ActivationType.LOGSIG)
-            .ToLayer(80)
-            .WithActivationFunction(ActivationType.LOGSIG)
-            .ToLayer(10)
-            .WithActivationFunction(ActivationType.LOGSIG)
-            .ToOutput()
-            .Build();
+        var input = new DataNode(IMAGE_SIZE);
+        
+        var parameter1 = DataNode.CreateRandom(200 * IMAGE_SIZE);
+        var reshape1 = new VectorToMatrixNode(parameter1, 200, IMAGE_SIZE);
+        var layer1 = new LayerNode(reshape1, input, false);
+        var activation1 = ActivationNode.Create(layer1, ActivationType.LOGSIG);
 
-        var sgdMethod = new RegularSGD(learningRate);
+        var parameter2 = DataNode.CreateRandom(80 * 200);
+        var reshape2 = new VectorToMatrixNode(parameter2, 80, 200);
+        var layer2 = new LayerNode(reshape2, activation1, true);
+        var activation2 = ActivationNode.Create(layer2, ActivationType.LOGSIG);
 
-        network.Fit(data, markup, sgdMethod, numberOfEpochs, Console.Out);
+        var parameter3 = DataNode.CreateRandom(80 * 10);
+        var reshape3 = new VectorToMatrixNode(parameter3, 10, 80);
+        var layer3 = new LayerNode(reshape3, activation2, true);
+        var activation3 = ActivationNode.Create(layer3, ActivationType.LOGSIG);
 
-        using(var stream = File.OpenWrite(Path.Combine(networkFileDirectory, fileName)))
-        using(var writer = new BinaryWriter(stream))
-            network.Export(writer);
+        var network = new NeuralNetwork(input, new DataNode[] {parameter1, parameter2, parameter3}, activation3);
+        network.Fit(data, markup, learningRate, numberOfEpochs, Console.Out);
+        return network;
     }
 }
