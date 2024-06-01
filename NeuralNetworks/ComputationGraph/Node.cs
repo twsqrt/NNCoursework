@@ -20,7 +20,7 @@ public abstract class Node<T>
         _idCounter++;
     }
 
-    public abstract void BackpropagateNext(Vector gradient);
+    public abstract void BackpropagateNext(T gradient);
     public abstract T CalculateValue();
     public abstract void Accept(INodeVisitor visitor);
 }

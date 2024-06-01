@@ -24,18 +24,15 @@ public class LossNode : Node<float>
     public override void Accept(INodeVisitor visitor)
         => throw new InvalidOperationException();
 
-    public override void BackpropagateNext(Vector gradient)
-        => throw new InvalidOperationException();
+    public override void BackpropagateNext(float gradient)
+    {
+        _difference.Scale(2.0f * gradient);
+        _output.BackpropagateNext(_difference);
+    }
 
     public override float CalculateValue()
     {
         Vector.Difference(_output.CalculateValue(), _markup.CalculateValue(), _difference);
         return _difference.LengthSquared;
-    }
-
-    public void Backpropagate()
-    {
-        _difference.Scale(2.0f);
-        _output.BackpropagateNext(_difference);
     }
 }

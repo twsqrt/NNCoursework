@@ -42,7 +42,7 @@ public class NeuralNetwork
             if(float.IsNaN(loss))
                 throw new ArgumentException();
 
-            _loss.Backpropagate();
+            _loss.BackpropagateNext(1.0f);
 
             foreach(DataNode parameter in _parameters)
             {

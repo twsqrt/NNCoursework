@@ -1,4 +1,3 @@
-using System.Globalization;
 using LinearAlgebra;
 
 namespace NeuralNetworks.ComputationGraph;
@@ -7,7 +6,7 @@ public class LayerNode : Node<Vector>
 {
     private readonly Node<Vector> _child;
     private readonly Node<Matrix> _weights;
-    private readonly Vector _weightsCachedGradient;
+    private readonly Matrix _weightsCachedGradient;
     private readonly Vector _childCachedGradient;
     private readonly Vector _cachedResult;
     private readonly bool _shouldBackpropagateChild;
@@ -29,7 +28,7 @@ public class LayerNode : Node<Vector>
         _child = child;
         _weights = weights;
 
-        _weightsCachedGradient = Vector.CreateZero(weights.Shape.Width * weights.Shape.Height);
+        _weightsCachedGradient = Matrix.CreateZero(weights.Shape.Height, weights.Shape.Width);
         _cachedResult = Vector.CreateZero(Shape.Dimension);
 
         _shouldBackpropagateChild = shouldBackpropagateChild;
@@ -43,12 +42,9 @@ public class LayerNode : Node<Vector>
 
     public override void BackpropagateNext(Vector gradient)
     {
-        int weightsWidth = _weightsValue.Width;
-        for(int i = 0; i < _weightsValue.Height; i++)
-        {
-            for(int j = 0; j < weightsWidth; j++)
-                _weightsCachedGradient[i * weightsWidth + j] = gradient[i] * _childValue[j];
-        }
+        for(int i = 0; i < _weightsCachedGradient.Height; i++)
+        for(int j = 0; j < _weightsCachedGradient.Width; j++)
+                _weightsCachedGradient[i, j] = gradient[i] * _childValue[j];
 
         _weights.BackpropagateNext(_weightsCachedGradient);
 

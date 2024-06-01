@@ -16,7 +16,4 @@ public abstract class ReshapeNode<TInput, TOutput> : Node<TOutput>
     {
         throw new NotImplementedException();
     }
-
-    public override void BackpropagateNext(Vector gradient)
-        => _input.BackpropagateNext(gradient);
 }

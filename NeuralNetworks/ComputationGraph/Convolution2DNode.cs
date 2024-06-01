@@ -31,7 +31,7 @@ public class Convolution2DNode : Node<Tensor>
         throw new NotImplementedException();
     }
 
-    public override void BackpropagateNext(Vector gradient)
+    public override void BackpropagateNext(Tensor gradient)
         => throw new NotImplementedException();
 
     public override Tensor CalculateValue()
