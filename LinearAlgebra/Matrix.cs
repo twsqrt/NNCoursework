@@ -55,6 +55,18 @@ public class Matrix
         return new Matrix(size, size, data);
     }
 
+    public void Add(Matrix other)
+    {
+        for(int i = 0; i < _height * _width; i++)
+            _data[i + _dataStartIndex] += other._data[i + other._dataStartIndex];
+    }
+
+    public void Clear()
+    {
+        for(int i = 0; i < _height * _width; i++)
+            _data[i + _dataStartIndex] = 0.0f;
+    }
+
     public Vector AsVector()
         => new Vector(_data);
 

@@ -5,16 +5,18 @@ namespace NeuralNetworks;
 
 public class Convolution2DNode : Node<Tensor>
 {
-    private readonly Node<Tensor> _child;
+    private readonly Node<Matrix> _child;
     private readonly Node<Tensor> _kernel; 
     private readonly Tensor _cachedResult;
-    private Tensor _childResult;
+    private readonly Tensor _kernelCachedGradient;
+    private readonly bool _shouldBackpropagateChild;
+    private Matrix _childResult;
 
-    public Convolution2DNode(Node<Tensor> child, Node<Tensor> kernel) 
+    public Convolution2DNode(Node<Matrix> child, Node<Tensor> kernel, bool shouldBackpropagateChild = true)
     : base(new TensorShape(
         child.Shape.Height - kernel.Shape.Height + 1, 
         child.Shape.Width - kernel.Shape.Width + 1, 
-        child.Shape.Depth * kernel.Shape.Depth))
+        kernel.Shape.Depth))
     {
         if(kernel.Shape.Height > child.Shape.Height
             || kernel.Shape.Width > child.Shape.Width)
@@ -23,7 +25,10 @@ public class Convolution2DNode : Node<Tensor>
         _child = child;
         _kernel = kernel;
 
+        _shouldBackpropagateChild = shouldBackpropagateChild;
+
         _cachedResult = Tensor.CreateZero(Shape);
+        _kernelCachedGradient = Tensor.CreateZero(kernel.Shape);
     }
 
     public override void Accept(INodeVisitor visitor)
@@ -32,24 +37,33 @@ public class Convolution2DNode : Node<Tensor>
     }
 
     public override void BackpropagateNext(Tensor gradient)
-        => throw new NotImplementedException();
+    {
+        for(int i = 0; i < _kernel.Shape.Depth; i++)
+        {
+            Matrix gradientSlice = gradient.Slice(i);
+            Matrix resultSlice = _kernelCachedGradient.Slice(i);
+            Matrix.Convolution(_childResult, gradientSlice, resultSlice);
+        }
+
+        _kernel.BackpropagateNext(_kernelCachedGradient);
+
+        if(_shouldBackpropagateChild)
+        {
+            //...
+            // child.BackpropagateNext();
+        }
+    }
 
     public override Tensor CalculateValue()
     {
         _childResult = _child.CalculateValue();
         Tensor kernelResult = _kernel.CalculateValue();
 
-        int numberOfChannels = kernelResult.Shape.Depth;
-
-        for(int i = 0; i < _child.Shape.Depth; i++)
+        for(int i = 0; i < _kernel.Shape.Depth; i++)
         {
-            Matrix slice = _childResult.Slice(i);
-            for(int j = 0; j < numberOfChannels; j++)
-            {
-                Matrix kernelSlice = kernelResult.Slice(j);
-                Matrix resultSlice = _cachedResult.Slice(numberOfChannels * i + j);
-                Matrix.Convolution(slice, kernelSlice, resultSlice);
-            }
+            Matrix kernelSlice = kernelResult.Slice(i);
+            Matrix resultSlice = _cachedResult.Slice(i);
+            Matrix.Convolution(_childResult, kernelSlice, resultSlice);
         }
 
         return _cachedResult;
