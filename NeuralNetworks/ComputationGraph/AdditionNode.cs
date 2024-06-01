@@ -7,12 +7,9 @@ public class AdditionNode : Node<Vector>
     private readonly Node<Vector> _lhs;
     private readonly Node<Vector> _rhs;
     private readonly Vector _rhsCachedGradient;
-    private readonly Vector _cachedResult;
 
-    public Node<Vector> LeftNode => _lhs;
-    public Node<Vector> RightNode => _rhs;
-
-    public AdditionNode(Node<Vector> lhs, Node<Vector> rhs) : base(lhs.Shape)
+    public AdditionNode(Node<Vector> lhs, Node<Vector> rhs) 
+    : base(lhs.Shape, new INode[]{lhs, rhs})
     {
         if(lhs.Shape != rhs.Shape)
             throw new ArgumentException();
@@ -21,7 +18,7 @@ public class AdditionNode : Node<Vector>
         _rhs = rhs;
 
         _rhsCachedGradient = Vector.CreateZero(Shape.Height);
-        _cachedResult = Vector.CreateZero(Shape.Height);
+        _value = Vector.CreateZero(Shape.Height);
     }
 
     public override void BackpropagateNext(Vector gradient)
@@ -32,12 +29,6 @@ public class AdditionNode : Node<Vector>
         _rhs.BackpropagateNext(_rhsCachedGradient);
     }
 
-    public override Vector CalculateValue()
-    {
-        Vector.Addition(_lhs.CalculateValue(), _rhs.CalculateValue(), _cachedResult);
-        return _cachedResult;
-    }
-
-    public override void Accept(INodeVisitor visitor)
-        => visitor.Visit(this);
+    public override void CalculateValue()
+        => Vector.Addition(_lhs.Value, _rhs.Value, _value);
 }

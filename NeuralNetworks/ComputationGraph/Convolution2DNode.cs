@@ -7,16 +7,14 @@ public class Convolution2DNode : Node<Tensor>
 {
     private readonly Node<Matrix> _child;
     private readonly Node<Tensor> _kernel; 
-    private readonly Tensor _cachedResult;
     private readonly Tensor _kernelCachedGradient;
     private readonly bool _shouldBackpropagateChild;
-    private Matrix _childResult;
 
     public Convolution2DNode(Node<Matrix> child, Node<Tensor> kernel, bool shouldBackpropagateChild = true)
     : base(new TensorShape(
         child.Shape.Height - kernel.Shape.Height + 1, 
         child.Shape.Width - kernel.Shape.Width + 1, 
-        kernel.Shape.Depth))
+        kernel.Shape.Depth), new INode[]{child, kernel})
     {
         if(kernel.Shape.Height > child.Shape.Height
             || kernel.Shape.Width > child.Shape.Width)
@@ -27,13 +25,8 @@ public class Convolution2DNode : Node<Tensor>
 
         _shouldBackpropagateChild = shouldBackpropagateChild;
 
-        _cachedResult = Tensor.CreateZero(Shape);
+        _value = Tensor.CreateZero(Shape);
         _kernelCachedGradient = Tensor.CreateZero(kernel.Shape);
-    }
-
-    public override void Accept(INodeVisitor visitor)
-    {
-        throw new NotImplementedException();
     }
 
     public override void BackpropagateNext(Tensor gradient)
@@ -42,7 +35,7 @@ public class Convolution2DNode : Node<Tensor>
         {
             Matrix gradientSlice = gradient.Slice(i);
             Matrix resultSlice = _kernelCachedGradient.Slice(i);
-            Matrix.Convolution(_childResult, gradientSlice, resultSlice);
+            Matrix.Convolution(_child.Value, gradientSlice, resultSlice);
         }
 
         _kernel.BackpropagateNext(_kernelCachedGradient);
@@ -54,18 +47,13 @@ public class Convolution2DNode : Node<Tensor>
         }
     }
 
-    public override Tensor CalculateValue()
+    public override void CalculateValue()
     {
-        _childResult = _child.CalculateValue();
-        Tensor kernelResult = _kernel.CalculateValue();
-
         for(int i = 0; i < _kernel.Shape.Depth; i++)
         {
-            Matrix kernelSlice = kernelResult.Slice(i);
-            Matrix resultSlice = _cachedResult.Slice(i);
-            Matrix.Convolution(_childResult, kernelSlice, resultSlice);
+            Matrix kernelSlice = _kernel.Value.Slice(i);
+            Matrix resultSlice = _value.Slice(i);
+            Matrix.Convolution(_child.Value, kernelSlice, resultSlice);
         }
-
-        return _cachedResult;
     }
 }

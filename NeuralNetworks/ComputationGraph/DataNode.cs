@@ -9,16 +9,21 @@ public class DataNode : Node<Vector>
 
     private Vector _gradient;
 
-    public Vector Data { get; set; }
+    public new Vector Value
+    {
+        get => _value;
+        set => _value = value;
+    }
+
     public Vector Gradient => _gradient;
 
     public DataNode(int dimension)
-    : base(new TensorShape(dimension)) {}
-    
+    : base(new TensorShape(dimension), new INode[0]) {}
+   
     public DataNode(Vector initData)
-    : base(new TensorShape(initData.Dimension))
+    : base(new TensorShape(initData.Dimension), new INode[0])
     {
-        Data = initData;
+        _value = initData;
     }
 
     public static DataNode CreateFromArray(float[] data)
@@ -33,12 +38,8 @@ public class DataNode : Node<Vector>
         return CreateFromArray(data);
     }
 
-    public override void Accept(INodeVisitor visitor)
-        => visitor.Visit(this);
+    public override void BackpropagateNext(Vector gradinet)
+        => _gradient = gradinet;
 
-    public override void BackpropagateNext(Vector gradient)
-        => _gradient = gradient;
-
-    public override Vector CalculateValue()
-        => Data;
+    public override void CalculateValue() {}
 }

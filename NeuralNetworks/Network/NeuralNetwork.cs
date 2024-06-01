@@ -8,6 +8,7 @@ public class NeuralNetwork
 {
     private readonly DataNode _input;
     private readonly DataNode[] _parameters;
+    private readonly INode[] _nodes;
     private readonly Node<Vector> _output;
     private readonly LossNode _loss;
     private readonly DataNode _lossMarkup;
@@ -20,6 +21,27 @@ public class NeuralNetwork
 
         _lossMarkup = new DataNode(_output.Shape.Dimension);
         _loss = new LossNode(output, _lossMarkup);
+
+        var nodesList = new List<INode>();
+        nodesList.Add(_loss);
+
+        for(int i = 0; i < nodesList.Count(); i++)
+        {
+            foreach(INode parameter in nodesList[i].Parameters)
+            {
+                if(parameter is not DataNode)
+                    nodesList.Add(parameter);
+            }
+        }
+
+        nodesList.Reverse();
+        _nodes = nodesList.ToArray();
+    }
+
+    private void UpdateValues()
+    {
+        for(int i = 0; i < _nodes.Length; i++)
+            _nodes[i].CalculateValue();
     }
 
     public void Fit(Vector[] data, Vector[] markup, float learningRate, Action<int> progressCallback)
@@ -35,20 +57,17 @@ public class NeuralNetwork
                 percentInteger++;
             }
 
-            _input.Data = data[i];
-            _lossMarkup.Data = markup[i];
+            _input.Value = data[i];
+            _lossMarkup.Value = markup[i];
 
-            float loss = _loss.CalculateValue();
-            if(float.IsNaN(loss))
-                throw new ArgumentException();
-
+            UpdateValues();
             _loss.BackpropagateNext(1.0f);
 
             foreach(DataNode parameter in _parameters)
             {
                 Vector gradient = parameter.Gradient;
                 gradient.Scale(-1.0f * learningRate);
-                parameter.Data.Add(gradient);
+                parameter.Value.Add(gradient);
             }
         }
     }
@@ -70,7 +89,8 @@ public class NeuralNetwork
 
     public Vector Execute(Vector input)
     {
-        _input.Data = input;
-        return _output.CalculateValue();
+        _input.Value = input;
+        UpdateValues();
+        return _output.Value;
     }
 }

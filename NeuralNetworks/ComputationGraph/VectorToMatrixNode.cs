@@ -20,6 +20,8 @@ public class VectorToMatrixNode : ReshapeNode<Vector, Matrix>
     public override void BackpropagateNext(Matrix gradient)
         => _input.BackpropagateNext(gradient.AsVector());
 
-    public override Matrix CalculateValue()
-        => _input.CalculateValue().AsMatrix(_height, _width);
+    public override void CalculateValue()
+    {
+        _value = _input.Value.AsMatrix(_height, _width);
+    }
 }

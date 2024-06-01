@@ -9,21 +9,19 @@ public class ActivationNode : Node<Vector>
     private readonly Func<float, float> _function;
     private readonly Func<float, float> _derivative;
     private readonly ActivationType _type;
-    private readonly Vector _cachedResult;
-    private Vector _childResult;
 
     public Node<Vector> Child => _child;
     public ActivationType Type => _type;
     
     private ActivationNode(Node<Vector> child, Func<float, float> function, Func<float, float> derivative, ActivationType type) 
-    : base(child.Shape)
+    : base(child.Shape, new INode[]{child})
     {
         _child = child;
         _function = function;
         _derivative = derivative;
         _type = type;
 
-        _cachedResult = Vector.CreateZero(Shape.Height);
+        _value = Vector.CreateZero(Shape.Height);
     }
 
     public static ActivationNode Create(Node<Vector> child, ActivationType type)
@@ -58,20 +56,14 @@ public class ActivationNode : Node<Vector>
     public override void BackpropagateNext(Vector gradient)
     {
         for(int i = 0; i < gradient.Dimension; i++)
-            gradient[i] *= _derivative(_childResult[i]);
+            gradient[i] *= _derivative(_child.Value[i]);
 
         _child.BackpropagateNext(gradient);
     }
 
-    public override Vector CalculateValue()
+    public override void CalculateValue()
     {
-        _childResult = _child.CalculateValue();
-        for(int i = 0; i < _childResult.Dimension; i++)
-            _cachedResult[i] = _function(_childResult[i]);
-           
-        return _cachedResult;
+        for(int i = 0; i < _child.Value.Dimension; i++)
+            _value[i] = _function(_child.Value[i]);
     }
-
-    public override void Accept(INodeVisitor visitor)
-        => visitor.Visit(this);
 }

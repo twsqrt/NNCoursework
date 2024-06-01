@@ -11,6 +11,8 @@ public class TensorToVectorNode : ReshapeNode<Tensor, Vector>
     public override void BackpropagateNext(Vector gradient)
         => _input.BackpropagateNext(new Tensor(gradient.Data, _input.Shape));
 
-    public override Vector CalculateValue()
-        => _input.CalculateValue().AsVector();
+    public override void CalculateValue()
+    {
+        _value = _input.Value.AsVector();
+    }
 }
