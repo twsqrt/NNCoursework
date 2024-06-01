@@ -5,6 +5,7 @@ public class Matrix
     private readonly int _height;
     private readonly int _width;
     private readonly float[] _data;
+    private readonly int _dataStartIndex;
 
     public int Height => _height;
     public int Width => _width;
@@ -12,18 +13,27 @@ public class Matrix
 
     public float this[int i, int j] 
     {
-        get => _data[i * _width + j];
-        set => _data[i * _width + j] = value;
+        get => _data[i * _width + j + _dataStartIndex];
+        set => _data[i * _width + j + _dataStartIndex] = value;
     }
 
-    public Matrix(int height, int width, float[] data)
+    public Matrix(int height, int width, float[] data, int dataStartIndex)
     {
-        if(data.Length != height * width)
+        if(data.Length - dataStartIndex < height * width)
             throw new ArgumentException();
-
+        
         _height = height;
         _width = width;
         _data = data;
+        _dataStartIndex = dataStartIndex;
+    }
+
+
+    public Matrix(int height, int width, float[] data)
+    : this(height, width, data, 0)
+    {
+        if(data.Length != height * width)
+            throw new ArgumentException();
     }
 
     public static Matrix CreateZero(int height, int width)
@@ -50,14 +60,14 @@ public class Matrix
 
     public void CopyValuesFrom(Matrix other)
     {
-        for(int i = 0; i < _data.Length; i++)
-            _data[i] = other._data[i];
+        for(int i = 0; i < _height * _width; i++)
+            _data[i + _dataStartIndex] = other._data[i + _dataStartIndex];
     }
 
     public void CopyValuesFrom(Vector other)
     {
-        for(int i = 0; i < _data.Length; i++)
-            _data[i] = other[i];
+        for(int i = 0; i < _height * _width; i++)
+            _data[i + _dataStartIndex] = other[i];
     }
 
     public static void Multiply(Matrix lhs, Matrix rhs, Matrix result)
@@ -96,6 +106,21 @@ public class Matrix
                 sum += lhs[j] * rhs[j, i];
 
             result[i] = sum;
+        }
+    }
+
+    public static void Convolution(Matrix matrix, Matrix kernel, Matrix result)
+    {
+        for(int i = 0; i < result.Height; i++)
+        for(int j = 0; j < result.Width; j++)
+        {
+            float sum = 0.0f;
+
+            for(int k = 0; k < kernel.Height; k++)
+            for(int l = 0; l < kernel.Width; l++)
+                sum += kernel[k, l] * matrix[i + k, j + l];
+            
+            result[i, j] = sum;
         }
     }
 }

@@ -21,6 +21,12 @@ public class Tensor
         set => _data[i * _shape.Width + j + k * _shape.Height * _shape.Width] = value;
     }
 
+    public Matrix Slice(int depth)
+    {
+        int dataStartIndex = _shape.Height * _shape.Width * depth;
+        return new Matrix(Shape.Height, Shape.Width, _data, dataStartIndex);
+    }
+
     public Tensor(float[] data, int height, int width = 1, int depth = 1)
     {
         if(height * width * depth != data.Length)

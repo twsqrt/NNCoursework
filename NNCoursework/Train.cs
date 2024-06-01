@@ -73,7 +73,7 @@ public static class Train
         var layer3 = new LayerNode(reshape3, activation2, true);
         var activation3 = ActivationNode.Create(layer3, ActivationType.LOGSIG);
 
-        var network = new NeuralNetwork(input, new DataNode[] {parameter1, parameter2, parameter3}, activation3);
+        var network = new NeuralNetwork(input, new[] {parameter1, parameter2, parameter3}, activation3);
         network.Fit(data, markup, learningRate, numberOfEpochs, Console.Out);
         return network;
     }
