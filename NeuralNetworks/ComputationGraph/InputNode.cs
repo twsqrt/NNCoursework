@@ -12,9 +12,9 @@ public class VectorInputNode : Node<Vector>
     }
 
     public VectorInputNode(int dimension)
-    : base(new TensorShape3D(dimension), new INode[0])
+    : base(new TensorShape(dimension), new INode[0])
     {
-        ParentGradient = Vector.CreateZero(dimension);
+        Gradient = Vector.CreateZero(dimension);
     }
 
     public override void CalculateGradient() {}

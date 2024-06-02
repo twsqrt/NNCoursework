@@ -51,9 +51,9 @@ public class ActivationNode<T> : Node<T>
 
     public override void CalculateGradient()
     {
-        for(int i = 0; i < ParentGradient.Data.Length; i++)
-            _child.ParentGradient.Data[i] = 
-                ParentGradient.Data[i] * _derivative(_child.Value.Data[i]);
+        for(int i = 0; i < Gradient.Data.Length; i++)
+            _child.Gradient.Data[i] = 
+                Gradient.Data[i] * _derivative(_child.Value.Data[i]);
     }
 
     public override void CalculateValue()

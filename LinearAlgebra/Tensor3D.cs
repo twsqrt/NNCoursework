@@ -3,9 +3,9 @@
 public class Tensor3D : ITensor
 {
     private readonly float[] _data;
-    private readonly TensorShape3D _shape;
+    private readonly TensorShape _shape;
 
-    public TensorShape3D Shape => _shape;
+    public TensorShape Shape => _shape;
     public float[] Data => _data;
 
     public float this[int i] 
@@ -26,7 +26,7 @@ public class Tensor3D : ITensor
         return new Tensor3DSlice(Shape.Height, Shape.Width, _data, startIndex);
     }
 
-    public Tensor3D(float[] data, TensorShape3D shape)
+    public Tensor3D(float[] data, TensorShape shape)
     {
         if(shape.Dimension != data.Length)
             throw new ArgumentException();

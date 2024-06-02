@@ -58,22 +58,22 @@ public static class Train
         ReadData(out data, out markup);
 
         var input = new VectorInputNode(IMAGE_SIZE);
-        var inputMat = new ReshapeNode<Vector, Matrix>(input, new TensorShape3D(28, 28));
+        var inputMat = new ReshapeNode<Vector, Matrix>(input, new TensorShape(28, 28));
 
-        var kernel = new DataNode<Tensor3D>(new TensorShape3D(5, 5, 4));
+        var kernel = new DataNode<Tensor3D>(new TensorShape(5, 5, 4));
         var conv = new Convolution2DNode(inputMat, kernel, false);
         var maxpool = new MaxPool2DNode(conv, 2, 2);
-        var convOutput = new ReshapeNode<Tensor3D, Vector>(maxpool, new TensorShape3D(576));
+        var convOutput = new ReshapeNode<Tensor3D, Vector>(maxpool, new TensorShape(576));
         
-        var weights1 = new DataNode<Matrix>(new TensorShape3D(150, 576));
+        var weights1 = new DataNode<Matrix>(new TensorShape(150, 576));
         var layer1 = new LayerNode(weights1, convOutput);
         var activation1 = ActivationNode<Vector>.Create(layer1, ActivationType.LOGSIG);
 
-        var weights2 = new DataNode<Matrix>(new TensorShape3D(50, 150));
+        var weights2 = new DataNode<Matrix>(new TensorShape(50, 150));
         var layer2 = new LayerNode(weights2, activation1);
         var activation2 = ActivationNode<Vector>.Create(layer2, ActivationType.LOGSIG);
 
-        var weights3 = new DataNode<Matrix>(new TensorShape3D(10, 50));
+        var weights3 = new DataNode<Matrix>(new TensorShape(10, 50));
         var layer3 = new LayerNode(weights3, activation2);
         var activation3 = ActivationNode<Vector>.Create(layer3, ActivationType.LOGSIG);
 

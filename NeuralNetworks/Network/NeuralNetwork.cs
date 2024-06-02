@@ -1,5 +1,4 @@
-﻿using System.Reflection.Metadata;
-using LinearAlgebra;
+﻿using LinearAlgebra;
 using NeuralNetworks.ComputationGraph;
 
 
@@ -72,7 +71,7 @@ public class NeuralNetwork
 
             foreach(IDataNode parameter in _parameters)
             {
-                float[] gradient = parameter.Gradient;
+                float[] gradient = parameter.GradientData;
                 for(int j = 0; j < parameter.Data.Length; j++)
                     parameter.Data[j] -= learningRate * gradient[j];
             }

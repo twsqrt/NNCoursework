@@ -19,8 +19,8 @@ public class AdditionNode : Node<Vector>
 
     public override void CalculateGradient()
     {
-        _lhs.ParentGradient.CopyValuesFrom(ParentGradient);
-        _rhs.ParentGradient = ParentGradient;
+        _lhs.Gradient.CopyValuesFrom(Gradient);
+        _rhs.Gradient = Gradient;
     }
 
     public override void CalculateValue()

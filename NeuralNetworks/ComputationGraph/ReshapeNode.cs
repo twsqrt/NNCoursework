@@ -8,14 +8,14 @@ public class ReshapeNode<TInput, TOutput> : Node<TOutput>
 {
     protected readonly Node<TInput> _input;
 
-    public ReshapeNode(Node<TInput> input, TensorShape3D shape) 
+    public ReshapeNode(Node<TInput> input, TensorShape shape) 
     : base(shape, new INode[]{input})
     {
         _input = input;
     }
 
     public override void CalculateGradient()
-        => _input.ParentGradient = TensorFactory.Create<TInput>(ParentGradient.Data, _input.Shape);
+        => _input.Gradient = TensorFactory.Create<TInput>(Gradient.Data, _input.Shape);
 
     public override void CalculateValue()
         => _value = TensorFactory.Create<TOutput>(_input.Value.Data, Shape);

@@ -9,7 +9,7 @@ public class LayerNode : Node<Vector>
     private readonly bool _shouldBackpropagateChild;
 
     public LayerNode(Node<Matrix> weights, Node<Vector> child, bool shouldBackpropagateChild = true) 
-    : base(new TensorShape3D(weights.Shape.Height), new INode[]{weights, child})
+    : base(new TensorShape(weights.Shape.Height), new INode[]{weights, child})
     {
         if(weights.Shape.Width != child.Shape.Height)
             throw new ArgumentException();
@@ -21,12 +21,12 @@ public class LayerNode : Node<Vector>
 
     public override void CalculateGradient()
     {
-        for(int i = 0; i < _weights.ParentGradient.Height; i++)
-        for(int j = 0; j < _weights.ParentGradient.Width; j++)
-                _weights.ParentGradient[i, j] = ParentGradient[i] * _child.Value[j];
+        for(int i = 0; i < _weights.Gradient.Height; i++)
+        for(int j = 0; j < _weights.Gradient.Width; j++)
+                _weights.Gradient[i, j] = Gradient[i] * _child.Value[j];
 
         if(_shouldBackpropagateChild)
-            Matrix.Multiply(ParentGradient, _weights.Value, _child.ParentGradient);
+            Matrix.Multiply(Gradient, _weights.Value, _child.Gradient);
     }
 
     public override void CalculateValue()

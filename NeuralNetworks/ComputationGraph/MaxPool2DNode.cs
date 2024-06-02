@@ -10,7 +10,7 @@ public class MaxPool2DNode : Node<Tensor3D>
     private readonly int _kernelWidth;
 
     public MaxPool2DNode(Node<Tensor3D> child, int kernelHeight, int kernelWidth)
-    : base(new TensorShape3D(
+    : base(new TensorShape(
         child.Shape.Height / kernelHeight, 
         child.Shape.Width / kernelWidth, 
         child.Shape.Depth), new INode[]{child})
@@ -42,8 +42,8 @@ public class MaxPool2DNode : Node<Tensor3D>
 
     public override void CalculateGradient()
     {
-        for(int i = 0; i < ParentGradient.Shape.Depth; i++)
-            CalculateGradientForSlice(ParentGradient.Slice(i), i, _child.ParentGradient.Slice(i));
+        for(int i = 0; i < Gradient.Shape.Depth; i++)
+            CalculateGradientForSlice(Gradient.Slice(i), i, _child.Gradient.Slice(i));
     }
 
     public override void CalculateValue()
