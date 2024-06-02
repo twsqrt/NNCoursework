@@ -35,13 +35,6 @@ public class Tensor3D : ITensor
         _shape = shape;
     }
     
-    public static Tensor3D CreateZero(TensorShape3D shape)
-    {
-        var data = new float[shape.Dimension];
-        Array.Fill(data, 0.0f);
-        return new Tensor3D(data, shape);
-    }
-     
     public void Scale(float scalar)
     {
         for(int i = 0; i < _data.Length; i++)

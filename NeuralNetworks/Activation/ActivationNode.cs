@@ -3,42 +3,40 @@ using NeuralNetworks.ComputationGraph;
 
 namespace NeuralNetworks.Activation;
 
-public class ActivationNode : Node<Vector>
+public class ActivationNode<T> : Node<T>
+    where T : ITensor
 {
-    private readonly Node<Vector> _child;
+    private readonly Node<T> _child;
     private readonly Func<float, float> _function;
     private readonly Func<float, float> _derivative;
     private readonly ActivationType _type;
 
-    private ActivationNode(Node<Vector> child, Func<float, float> function, Func<float, float> derivative, ActivationType type) 
+    private ActivationNode(Node<T> child, Func<float, float> function, Func<float, float> derivative, ActivationType type) 
     : base(child.Shape, new INode[]{child})
     {
         _child = child;
         _function = function;
         _derivative = derivative;
         _type = type;
-
-        _value = Vector.CreateZero(Shape.Dimension);
-        ParentGradient = Vector.CreateZero(Shape.Dimension);
     }
 
-    public static ActivationNode Create(Node<Vector> child, ActivationType type)
+    public static ActivationNode<T> Create(Node<T> child, ActivationType type)
     => type switch
     {
-        ActivationType.PURELIN => new ActivationNode(child, x => x, x => 1.0f, type),
-        ActivationType.SATLINS => new ActivationNode(
+        ActivationType.PURELIN => new ActivationNode<T>(child, x => x, x => 1.0f, type),
+        ActivationType.SATLINS => new ActivationNode<T>(
             child,
             ActivationFunctions.SymmetricSaturatingLinear,
             x => x > 0.0f && x < 1.0f ? 1.0f : 0.0f, 
             type
         ),
-        ActivationType.RELU => new ActivationNode(
+        ActivationType.RELU => new ActivationNode<T>(
             child, 
             x => MathF.Max(0.01f * x, x),
             x => x > 0.0f ? 1.0f : 0.01f,
             type
         ),
-        ActivationType.LOGSIG => new ActivationNode(
+        ActivationType.LOGSIG => new ActivationNode<T>(
             child,
             ActivationFunctions.LogSigmoid,
             ActivationFunctions.LogSigmoidDerivative,
@@ -48,18 +46,19 @@ public class ActivationNode : Node<Vector>
         _  => throw new NotImplementedException(),
     };
 
-    public static ActivationNode CreateCustorm(Node<Vector> child, Func<float, float> function, Func<float, float> derivative)
-        => new ActivationNode(child, function, derivative, ActivationType.CUSTOM);
+    public static ActivationNode<T> CreateCustorm(Node<T> child, Func<float, float> function, Func<float, float> derivative)
+        => new ActivationNode<T>(child, function, derivative, ActivationType.CUSTOM);
 
     public override void CalculateGradient()
     {
-        for(int i = 0; i < ParentGradient.Dimension; i++)
-            _child.ParentGradient[i] = ParentGradient[i] * _derivative(_child.Value[i]);
+        for(int i = 0; i < ParentGradient.Data.Length; i++)
+            _child.ParentGradient.Data[i] = 
+                ParentGradient.Data[i] * _derivative(_child.Value.Data[i]);
     }
 
     public override void CalculateValue()
     {
-        for(int i = 0; i < _child.Value.Dimension; i++)
-            _value[i] = _function(_child.Value[i]);
+        for(int i = 0; i < _child.Value.Data.Length; i++)
+            _value.Data[i] = _function(_child.Value.Data[i]);
     }
 }

@@ -2,7 +2,7 @@
 
 namespace NeuralNetworks.ComputationGraph;
 
-public abstract class ReshapeNode<TInput, TOutput> : Node<TOutput>
+public class ReshapeNode<TInput, TOutput> : Node<TOutput>
     where TInput : ITensor
     where TOutput : ITensor
 {
@@ -13,4 +13,11 @@ public abstract class ReshapeNode<TInput, TOutput> : Node<TOutput>
     {
         _input = input;
     }
+
+    public override void CalculateGradient()
+        => _input.ParentGradient = TensorFactory.Create<TInput>(ParentGradient.Data, _input.Shape);
+
+    public override void CalculateValue()
+        => _value = TensorFactory.Create<TOutput>(_input.Value.Data, Shape);
+    
 }

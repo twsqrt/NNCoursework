@@ -25,9 +25,6 @@ public class Convolution2DNode : Node<Tensor3D>
         _kernel = kernel;
 
         _shouldBackpropagateChild = shouldBackpropagateChild;
-
-        _value = Tensor3D.CreateZero(Shape);
-        ParentGradient = Tensor3D.CreateZero(Shape);
    }
 
     public override void CalculateGradient()

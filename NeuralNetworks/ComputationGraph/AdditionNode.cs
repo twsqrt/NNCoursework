@@ -15,9 +15,6 @@ public class AdditionNode : Node<Vector>
 
         _lhs = lhs;
         _rhs = rhs;
-
-        _value = Vector.CreateZero(Shape.Dimension);
-        ParentGradient = Vector.CreateZero(Shape.Dimension);
     }
 
     public override void CalculateGradient()

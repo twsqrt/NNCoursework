@@ -17,7 +17,7 @@ public class Matrix : ITensor, IMatrix
         set => _data[i * _width + j] = value;
     }
 
-    public Matrix(int height, int width, float[] data)
+    public Matrix(float[] data, int height, int width)
     {
         if(data.Length != height * width)
             throw new ArgumentException();
@@ -25,13 +25,6 @@ public class Matrix : ITensor, IMatrix
         _height = height;
         _width = width;
         _data = data;
-    }
-
-    public static Matrix CreateZero(int height, int width)
-    {
-        var data = new float[height * width];
-        Array.Fill(data, 0.0f);
-        return new Matrix(height, width, data);
     }
 
     public void Add(Matrix other)

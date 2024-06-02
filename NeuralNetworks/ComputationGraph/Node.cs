@@ -18,6 +18,9 @@ public abstract class Node<T> : INode
     {
         _shape = shape;
         _paramters = parameters;
+
+        _value = TensorFactory.CreateZero<T>(shape);
+        ParentGradient = TensorFactory.CreateZero<T>(shape);
     }
 
     public abstract void CalculateValue();

@@ -17,9 +17,6 @@ public class LayerNode : Node<Vector>
         _child = child;
         _weights = weights;
         _shouldBackpropagateChild = shouldBackpropagateChild;
-
-        _value = Vector.CreateZero(Shape.Dimension);
-        ParentGradient = Vector.CreateZero(Shape.Dimension);
     }
 
     public override void CalculateGradient()

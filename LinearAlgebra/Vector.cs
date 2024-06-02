@@ -32,13 +32,15 @@ public class Vector : ITensor
         _data = data;
     }
 
-    public static Vector CreateZero(int length)
+    public static Vector CreateZero(int dimension)
     {
-        var data = new float[length];
-        Array.Fill(data, 0.0f);
+        float[] data = Enumerable.Range(0, dimension)
+            .Select(_ => 0.0f)
+            .ToArray();
+
         return new Vector(data);
     }
-    
+
     public static Vector Create1D(float value)
     {
         var data = new float[]{ value };

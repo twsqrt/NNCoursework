@@ -22,9 +22,6 @@ public class MaxPool2DNode : Node<Tensor3D>
         _child = child;
         _kernelHeight = kernelHeight;
         _kernelWidth = kernelWidth;
-
-        _value = Tensor3D.CreateZero(Shape);
-        ParentGradient = Tensor3D.CreateZero(Shape);
     }
 
     public void CalculateGradientForSlice(Tensor3DSlice gradientSlice, int depth, Tensor3DSlice result)
