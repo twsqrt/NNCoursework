@@ -3,28 +3,24 @@
 namespace NeuralNetworks.ComputationGraph;
 
 public abstract class Node<T> : INode
+    where T : ITensor
 {
-    private static int _idCounter = 0;
-
     private readonly INode[] _paramters;
-    private readonly int _id;
-    private readonly TensorShape _shape;
+    private readonly TensorShape3D _shape;
     protected T _value;
 
-    public int ID => _id;
-    public TensorShape Shape => _shape;
-    public T Value => _value;
+    public TensorShape3D Shape => _shape;
     public INode[] Parameters => _paramters;
+    public T Value => _value;
+    internal T ParentGradient;
 
-    public Node(TensorShape shape, INode[] parameters)
+    public Node(TensorShape3D shape, INode[] parameters)
     {
         _shape = shape;
         _paramters = parameters;
-        _id = _idCounter;
-
-        _idCounter++;
     }
 
     public abstract void CalculateValue();
-    public abstract void BackpropagateNext(T gradient);
+    public abstract void CalculateGradient();
+        
 }

@@ -22,9 +22,7 @@ public class NeuralNetwork
         _lossMarkup = new DataNode(_output.Shape.Dimension);
         _loss = new LossNode(output, _lossMarkup);
 
-        var nodesList = new List<INode>();
-        nodesList.Add(_loss);
-
+        var nodesList = new List<INode>{_loss};
         for(int i = 0; i < nodesList.Count(); i++)
         {
             foreach(INode parameter in nodesList[i].Parameters)
@@ -44,6 +42,12 @@ public class NeuralNetwork
             _nodes[i].CalculateValue();
     }
 
+    private void Backpropagate()
+    {
+        for(int i = _nodes.Length - 1; i >= 0; i--)
+            _nodes[i].CalculateGradient();
+    }
+
     public void Fit(Vector[] data, Vector[] markup, float learningRate, Action<int> progressCallback)
     {
         int percentInteger = 0;
@@ -61,7 +65,7 @@ public class NeuralNetwork
             _lossMarkup.Value = markup[i];
 
             UpdateValues();
-            _loss.BackpropagateNext(1.0f);
+            Backpropagate();
 
             foreach(DataNode parameter in _parameters)
             {

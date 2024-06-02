@@ -1,6 +1,6 @@
 namespace LinearAlgebra;
 
-public class Matrix
+public class Matrix : ITensor
 {
     private readonly int _height;
     private readonly int _width;

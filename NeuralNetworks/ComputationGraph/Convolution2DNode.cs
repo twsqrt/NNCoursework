@@ -3,15 +3,14 @@ using NeuralNetworks.ComputationGraph;
 
 namespace NeuralNetworks;
 
-public class Convolution2DNode : Node<Tensor>
+public class Convolution2DNode : Node<Tensor3D>
 {
     private readonly Node<Matrix> _child;
-    private readonly Node<Tensor> _kernel; 
-    private readonly Tensor _kernelCachedGradient;
+    private readonly Node<Tensor3D> _kernel; 
     private readonly bool _shouldBackpropagateChild;
 
-    public Convolution2DNode(Node<Matrix> child, Node<Tensor> kernel, bool shouldBackpropagateChild = true)
-    : base(new TensorShape(
+    public Convolution2DNode(Node<Matrix> child, Node<Tensor3D> kernel, bool shouldBackpropagateChild = true)
+    : base(new TensorShape3D(
         child.Shape.Height - kernel.Shape.Height + 1, 
         child.Shape.Width - kernel.Shape.Width + 1, 
         kernel.Shape.Depth), new INode[]{child, kernel})
@@ -25,25 +24,22 @@ public class Convolution2DNode : Node<Tensor>
 
         _shouldBackpropagateChild = shouldBackpropagateChild;
 
-        _value = Tensor.CreateZero(Shape);
-        _kernelCachedGradient = Tensor.CreateZero(kernel.Shape);
-    }
+        _value = Tensor3D.CreateZero(Shape);
+        ParentGradient = Tensor3D.CreateZero(Shape);
+   }
 
-    public override void BackpropagateNext(Tensor gradient)
+    public override void CalculateGradient()
     {
         for(int i = 0; i < _kernel.Shape.Depth; i++)
         {
-            Matrix gradientSlice = gradient.Slice(i);
-            Matrix resultSlice = _kernelCachedGradient.Slice(i);
+            Matrix gradientSlice = ParentGradient.Slice(i);
+            Matrix resultSlice = _kernel.ParentGradient.Slice(i);
             Matrix.Convolution(_child.Value, gradientSlice, resultSlice);
         }
-
-        _kernel.BackpropagateNext(_kernelCachedGradient);
 
         if(_shouldBackpropagateChild)
         {
             //...
-            // child.BackpropagateNext();
         }
     }
 

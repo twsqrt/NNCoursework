@@ -1,4 +1,5 @@
-﻿using System.Globalization;
+﻿using System.Diagnostics;
+using System.Globalization;
 using CsvHelper;
 using LinearAlgebra;
 using NeuralNetworks;
@@ -60,7 +61,7 @@ public static class Train
         var matrixInput = new VectorToMatrixNode(input, 28, 28);
 
         var parameter0 = DataNode.CreateRandom(5 * 5 * 8);
-        var kernel = new VectorToTensor(parameter0, new TensorShape(5, 5, 8));
+        var kernel = new VectorToTensor(parameter0, new TensorShape3D(5, 5, 8));
         var conv = new Convolution2DNode(matrixInput, kernel, false);
         var maxpool = new MaxPool2DNode(conv, 2, 2);
         var convOutput = new TensorToVectorNode(maxpool);
@@ -76,7 +77,19 @@ public static class Train
         var activation2 = ActivationNode.Create(layer2, ActivationType.LOGSIG);
 
         var network = new NeuralNetwork(input, new[] {parameter0, parameter1, parameter2}, activation2);
+
+        var stopWatch = new Stopwatch();
+        stopWatch.Start();
+
         network.Fit(data, markup, learningRate, numberOfEpochs, Console.Out);
+
+        stopWatch.Stop();
+        TimeSpan ts = stopWatch.Elapsed;
+        string elapsedTime = String.Format("{0:00}:{1:00}:{2:00}.{3:00}",
+            ts.Hours, ts.Minutes, ts.Seconds,
+            ts.Milliseconds / 10);
+        Console.WriteLine("Train Time: " + elapsedTime);
+
         return network;
     }
 }

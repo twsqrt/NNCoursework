@@ -1,6 +1,6 @@
 ﻿namespace LinearAlgebra;
 
-public class Vector
+public class Vector : ITensor
 {
     private readonly int _dimension;
     private readonly float[] _data;
@@ -61,6 +61,19 @@ public class Vector
     {
         for(int i = 0; i < _data.Length; i++)
             _data[i] = value._data[i];
+    }
+
+    public void CopyValuesFrom(Matrix matrix)
+    {
+        for(int i = 0; i < matrix.Height; i++)
+        for(int j = 0; j < matrix.Width; j++)
+            _data[i * matrix.Width + j] = matrix[i, j];
+    }
+
+    public void CopyValuesFrom(Tensor3D tensor)
+    {
+        for(int i = 0; i < _data.Length; i++)
+            _data[i] = tensor[i];
     }
 
     public float ToNumber()

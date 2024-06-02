@@ -6,7 +6,6 @@ public class AdditionNode : Node<Vector>
 {
     private readonly Node<Vector> _lhs;
     private readonly Node<Vector> _rhs;
-    private readonly Vector _rhsCachedGradient;
 
     public AdditionNode(Node<Vector> lhs, Node<Vector> rhs) 
     : base(lhs.Shape, new INode[]{lhs, rhs})
@@ -17,16 +16,14 @@ public class AdditionNode : Node<Vector>
         _lhs = lhs;
         _rhs = rhs;
 
-        _rhsCachedGradient = Vector.CreateZero(Shape.Height);
-        _value = Vector.CreateZero(Shape.Height);
+        _value = Vector.CreateZero(Shape.Dimension);
+        ParentGradient = Vector.CreateZero(Shape.Dimension);
     }
 
-    public override void BackpropagateNext(Vector gradient)
+    public override void CalculateGradient()
     {
-        _rhsCachedGradient.CopyValuesFrom(gradient);
-
-        _lhs.BackpropagateNext(gradient);
-        _rhs.BackpropagateNext(_rhsCachedGradient);
+        _lhs.ParentGradient.CopyValuesFrom(ParentGradient);
+        _rhs.ParentGradient = ParentGradient;
     }
 
     public override void CalculateValue()

@@ -1,13 +1,12 @@
-﻿using System.Runtime.InteropServices;
+﻿namespace LinearAlgebra;
 
-namespace LinearAlgebra;
-
-public class Tensor
+public class Tensor3D : ITensor
 {
     private readonly float[] _data;
-    private readonly TensorShape _shape;
+    private readonly TensorShape3D _shape;
 
-    public TensorShape Shape => _shape;
+    public TensorShape3D Shape => _shape;
+    public float[] Data => _data;
 
     public float this[int i] 
     {
@@ -27,7 +26,7 @@ public class Tensor
         return new Matrix(Shape.Height, Shape.Width, _data, dataStartIndex);
     }
 
-    public Tensor(float[] data, TensorShape shape)
+    public Tensor3D(float[] data, TensorShape3D shape)
     {
         if(shape.Dimension != data.Length)
             throw new ArgumentException();
@@ -36,15 +35,21 @@ public class Tensor
         _shape = shape;
     }
     
-    public static Tensor CreateZero(TensorShape shape)
+    public static Tensor3D CreateZero(TensorShape3D shape)
     {
         var data = new float[shape.Dimension];
         Array.Fill(data, 0.0f);
-        return new Tensor(data, shape);
+        return new Tensor3D(data, shape);
     }
      
     public Vector AsVector()
         => new Vector(_data);
+
+    public void CopyValuesFrom(Vector vector)
+    {
+        for(int i = 0; i < _data.Length; i++)
+            _data[i] = vector[i];
+    }
 
     public void Scale(float scalar)
     {
@@ -52,13 +57,13 @@ public class Tensor
             _data[i] *= scalar;
     }
 
-    public static void Addition(Tensor lhs, Tensor rhs, Tensor result)
+    public static void Addition(Tensor3D lhs, Tensor3D rhs, Tensor3D result)
     {
         for(int i = 0; i < result._data.Length; i++)
             result._data[i] = lhs._data[i] + rhs._data[i];
     }
 
-    public static void Difference(Tensor lhs, Tensor rhs, Tensor result)
+    public static void Difference(Tensor3D lhs, Tensor3D rhs, Tensor3D result)
     {
         for(int i = 0; i < result._data.Length; i++)
             result._data[i] = lhs._data[i] - rhs._data[i];

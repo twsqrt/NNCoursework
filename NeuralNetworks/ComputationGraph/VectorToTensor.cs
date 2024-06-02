@@ -3,16 +3,17 @@ using NeuralNetworks.ComputationGraph;
 
 namespace NeuralNetworks;
 
-public class VectorToTensor : ReshapeNode<Vector, Tensor>
+public class VectorToTensor : ReshapeNode<Vector, Tensor3D>
 {
-    public VectorToTensor(Node<Vector> input, TensorShape shape) 
-    : base(input, shape) {}
+    public VectorToTensor(Node<Vector> input, TensorShape3D shape) 
+    : base(input, shape)
+    {
+        ParentGradient = Tensor3D.CreateZero(shape);
+    }
 
-    public override void BackpropagateNext(Tensor gradient)
-        => _input.BackpropagateNext(gradient.AsVector());
+    public override void CalculateGradient()
+        => _input.ParentGradient = new Vector(ParentGradient.Data);
 
     public override void CalculateValue()
-    {
-        _value = new Tensor(_input.Value.Data, Shape);
-    }
+        => _value = new Tensor3D(_input.Value.Data, Shape);
 }

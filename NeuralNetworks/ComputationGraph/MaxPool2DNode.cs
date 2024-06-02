@@ -3,15 +3,14 @@ using NeuralNetworks.ComputationGraph;
 
 namespace NeuralNetworks;
 
-public class MaxPool2DNode : Node<Tensor>
+public class MaxPool2DNode : Node<Tensor3D>
 {
-    private readonly Node<Tensor> _child;
+    private readonly Node<Tensor3D> _child;
     private readonly int _kernelHeight; 
     private readonly int _kernelWidth;
-    private readonly Tensor _childCachedGradient;
 
-    public MaxPool2DNode(Node<Tensor> child, int kernelHeight, int kernelWidth)
-    : base(new TensorShape(
+    public MaxPool2DNode(Node<Tensor3D> child, int kernelHeight, int kernelWidth)
+    : base(new TensorShape3D(
         child.Shape.Height / kernelHeight, 
         child.Shape.Width / kernelWidth, 
         child.Shape.Depth), new INode[]{child})
@@ -24,8 +23,8 @@ public class MaxPool2DNode : Node<Tensor>
         _kernelHeight = kernelHeight;
         _kernelWidth = kernelWidth;
 
-        _value = Tensor.CreateZero(Shape);
-        _childCachedGradient = Tensor.CreateZero(child.Shape);
+        _value = Tensor3D.CreateZero(Shape);
+        ParentGradient = Tensor3D.CreateZero(Shape);
     }
 
     public void CalculateGradientForSlice(Matrix gradientSlice, int depth, Matrix result)
@@ -44,12 +43,10 @@ public class MaxPool2DNode : Node<Tensor>
         }
     }
 
-    public override void BackpropagateNext(Tensor gradient)
+    public override void CalculateGradient()
     {
-        for(int i = 0; i < gradient.Shape.Depth; i++)
-            CalculateGradientForSlice(gradient.Slice(i), i, _childCachedGradient.Slice(i));
-        
-        _child.BackpropagateNext(_childCachedGradient);
+        for(int i = 0; i < ParentGradient.Shape.Depth; i++)
+            CalculateGradientForSlice(ParentGradient.Slice(i), i, _child.ParentGradient.Slice(i));
     }
 
     public override void CalculateValue()

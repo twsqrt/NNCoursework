@@ -10,9 +10,6 @@ public class ActivationNode : Node<Vector>
     private readonly Func<float, float> _derivative;
     private readonly ActivationType _type;
 
-    public Node<Vector> Child => _child;
-    public ActivationType Type => _type;
-    
     private ActivationNode(Node<Vector> child, Func<float, float> function, Func<float, float> derivative, ActivationType type) 
     : base(child.Shape, new INode[]{child})
     {
@@ -21,7 +18,8 @@ public class ActivationNode : Node<Vector>
         _derivative = derivative;
         _type = type;
 
-        _value = Vector.CreateZero(Shape.Height);
+        _value = Vector.CreateZero(Shape.Dimension);
+        ParentGradient = Vector.CreateZero(Shape.Dimension);
     }
 
     public static ActivationNode Create(Node<Vector> child, ActivationType type)
@@ -53,12 +51,10 @@ public class ActivationNode : Node<Vector>
     public static ActivationNode CreateCustorm(Node<Vector> child, Func<float, float> function, Func<float, float> derivative)
         => new ActivationNode(child, function, derivative, ActivationType.CUSTOM);
 
-    public override void BackpropagateNext(Vector gradient)
+    public override void CalculateGradient()
     {
-        for(int i = 0; i < gradient.Dimension; i++)
-            gradient[i] *= _derivative(_child.Value[i]);
-
-        _child.BackpropagateNext(gradient);
+        for(int i = 0; i < ParentGradient.Dimension; i++)
+            _child.ParentGradient[i] = ParentGradient[i] * _derivative(_child.Value[i]);
     }
 
     public override void CalculateValue()
