@@ -20,10 +20,10 @@ public class Tensor3D : ITensor
         set => _data[i * _shape.Width + j + k * _shape.Height * _shape.Width] = value;
     }
 
-    public Matrix Slice(int depth)
+    public Tensor3DSlice Slice(int depth)
     {
-        int dataStartIndex = _shape.Height * _shape.Width * depth;
-        return new Matrix(Shape.Height, Shape.Width, _data, dataStartIndex);
+        int startIndex = _shape.Height * _shape.Width * depth;
+        return new Tensor3DSlice(Shape.Height, Shape.Width, _data, startIndex);
     }
 
     public Tensor3D(float[] data, TensorShape3D shape)
@@ -42,15 +42,6 @@ public class Tensor3D : ITensor
         return new Tensor3D(data, shape);
     }
      
-    public Vector AsVector()
-        => new Vector(_data);
-
-    public void CopyValuesFrom(Vector vector)
-    {
-        for(int i = 0; i < _data.Length; i++)
-            _data[i] = vector[i];
-    }
-
     public void Scale(float scalar)
     {
         for(int i = 0; i < _data.Length; i++)

@@ -63,19 +63,6 @@ public class Vector : ITensor
             _data[i] = value._data[i];
     }
 
-    public void CopyValuesFrom(Matrix matrix)
-    {
-        for(int i = 0; i < matrix.Height; i++)
-        for(int j = 0; j < matrix.Width; j++)
-            _data[i * matrix.Width + j] = matrix[i, j];
-    }
-
-    public void CopyValuesFrom(Tensor3D tensor)
-    {
-        for(int i = 0; i < _data.Length; i++)
-            _data[i] = tensor[i];
-    }
-
     public float ToNumber()
     {
         if(_dimension != 1)
@@ -83,9 +70,6 @@ public class Vector : ITensor
           
         return _data[0];
     }
-
-    public Matrix AsMatrix(int height, int width)
-        => new Matrix(height, width, _data);
 
     public static void Addition(Vector lhs, Vector rhs, Vector result)
     {

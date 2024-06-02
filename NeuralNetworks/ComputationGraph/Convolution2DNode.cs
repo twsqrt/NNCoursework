@@ -9,6 +9,8 @@ public class Convolution2DNode : Node<Tensor3D>
     private readonly Node<Tensor3D> _kernel; 
     private readonly bool _shouldBackpropagateChild;
 
+    public bool ShouldBackpropagateChild => _shouldBackpropagateChild;
+
     public Convolution2DNode(Node<Matrix> child, Node<Tensor3D> kernel, bool shouldBackpropagateChild = true)
     : base(new TensorShape3D(
         child.Shape.Height - kernel.Shape.Height + 1, 
@@ -32,8 +34,8 @@ public class Convolution2DNode : Node<Tensor3D>
     {
         for(int i = 0; i < _kernel.Shape.Depth; i++)
         {
-            Matrix gradientSlice = ParentGradient.Slice(i);
-            Matrix resultSlice = _kernel.ParentGradient.Slice(i);
+            Tensor3DSlice gradientSlice = ParentGradient.Slice(i);
+            Tensor3DSlice resultSlice = _kernel.ParentGradient.Slice(i);
             Matrix.Convolution(_child.Value, gradientSlice, resultSlice);
         }
 
@@ -47,8 +49,8 @@ public class Convolution2DNode : Node<Tensor3D>
     {
         for(int i = 0; i < _kernel.Shape.Depth; i++)
         {
-            Matrix kernelSlice = _kernel.Value.Slice(i);
-            Matrix resultSlice = _value.Slice(i);
+            Tensor3DSlice kernelSlice = _kernel.Value.Slice(i);
+            Tensor3DSlice resultSlice = _value.Slice(i);
             Matrix.Convolution(_child.Value, kernelSlice, resultSlice);
         }
     }

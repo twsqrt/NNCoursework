@@ -1,39 +1,30 @@
 namespace LinearAlgebra;
 
-public class Matrix : ITensor
+public class Matrix : ITensor, IMatrix
 {
     private readonly int _height;
     private readonly int _width;
     private readonly float[] _data;
-    private readonly int _dataStartIndex;
 
+    public float[] Data => _data;
     public int Height => _height;
     public int Width => _width;
     public (int, int) Shape => (_height, _width);
 
     public float this[int i, int j] 
     {
-        get => _data[i * _width + j + _dataStartIndex];
-        set => _data[i * _width + j + _dataStartIndex] = value;
+        get => _data[i * _width + j];
+        set => _data[i * _width + j] = value;
     }
 
-    public Matrix(int height, int width, float[] data, int dataStartIndex)
+    public Matrix(int height, int width, float[] data)
     {
-        if(data.Length - dataStartIndex < height * width)
+        if(data.Length != height * width)
             throw new ArgumentException();
         
         _height = height;
         _width = width;
         _data = data;
-        _dataStartIndex = dataStartIndex;
-    }
-
-
-    public Matrix(int height, int width, float[] data)
-    : this(height, width, data, 0)
-    {
-        if(data.Length != height * width)
-            throw new ArgumentException();
     }
 
     public static Matrix CreateZero(int height, int width)
@@ -43,46 +34,13 @@ public class Matrix : ITensor
         return new Matrix(height, width, data);
     }
 
-    public static Matrix CreateIdentity(int size)
-    {
-        var data = new float[size * size];
-        for(int i = 0; i < size; i++)
-        {
-            for(int j = 0; j < size; j++)
-                data[i * size + j] = i == j ? 1.0f : 0.0f;
-        }
-
-        return new Matrix(size, size, data);
-    }
-
     public void Add(Matrix other)
     {
         for(int i = 0; i < _height * _width; i++)
-            _data[i + _dataStartIndex] += other._data[i + other._dataStartIndex];
+            _data[i] += other._data[i];
     }
 
-    public void Clear()
-    {
-        for(int i = 0; i < _height * _width; i++)
-            _data[i + _dataStartIndex] = 0.0f;
-    }
-
-    public Vector AsVector()
-        => new Vector(_data);
-
-    public void CopyValuesFrom(Matrix other)
-    {
-        for(int i = 0; i < _height * _width; i++)
-            _data[i + _dataStartIndex] = other._data[i + _dataStartIndex];
-    }
-
-    public void CopyValuesFrom(Vector other)
-    {
-        for(int i = 0; i < _height * _width; i++)
-            _data[i + _dataStartIndex] = other[i];
-    }
-
-    public static void Multiply(Matrix lhs, Matrix rhs, Matrix result)
+    public static void Multiply(IMatrix lhs, IMatrix rhs, IMatrix result)
     {
         for(int i = 0; i < lhs.Height; i++)
         {
@@ -97,7 +55,7 @@ public class Matrix : ITensor
         }
     }
 
-    public static void Multiply(Matrix lhs, Vector rhs, Vector result)
+    public static void Multiply(IMatrix lhs, Vector rhs, Vector result)
     {
         for(int i = 0; i < lhs.Height; i++)
         {
@@ -109,7 +67,7 @@ public class Matrix : ITensor
         }
     }
 
-    public static void Multiply(Vector lhs, Matrix rhs, Vector result)
+    public static void Multiply(Vector lhs, IMatrix rhs, Vector result)
     {
         for(int i = 0; i < rhs.Height; i++)
         {
@@ -121,7 +79,7 @@ public class Matrix : ITensor
         }
     }
 
-    public static void Convolution(Matrix matrix, Matrix kernel, Matrix result)
+    public static void Convolution(IMatrix matrix, IMatrix kernel, IMatrix result)
     {
         for(int i = 0; i < result.Height; i++)
         for(int j = 0; j < result.Width; j++)
@@ -136,7 +94,7 @@ public class Matrix : ITensor
         }
     }
 
-    public static void MaxPool(Matrix matrix, int kernelHeight, int kernelWidth, Matrix result)
+    public static void MaxPool(IMatrix matrix, int kernelHeight, int kernelWidth, IMatrix result)
     {
         for(int i = 0; i < result.Height; i++)
         for(int j = 0; j < result.Width; j++)

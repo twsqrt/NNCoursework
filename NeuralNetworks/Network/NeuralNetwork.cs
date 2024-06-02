@@ -1,4 +1,5 @@
-﻿using LinearAlgebra;
+﻿using System.Reflection.Metadata;
+using LinearAlgebra;
 using NeuralNetworks.ComputationGraph;
 
 
@@ -6,28 +7,30 @@ namespace NeuralNetworks.Network;
 
 public class NeuralNetwork
 {
-    private readonly DataNode _input;
-    private readonly DataNode[] _parameters;
+    private readonly VectorInputNode _input;
+    private readonly IDataNode[] _parameters;
     private readonly INode[] _nodes;
     private readonly Node<Vector> _output;
     private readonly LossNode _loss;
-    private readonly DataNode _lossMarkup;
+    private readonly VectorInputNode _lossMarkup;
 
-    public NeuralNetwork(DataNode input, DataNode[] parameters, Node<Vector> output)
+    public NeuralNetwork(VectorInputNode input, IDataNode[] parameters, Node<Vector> output)
     {
         _input = input;
         _parameters = parameters;
         _output = output;
 
-        _lossMarkup = new DataNode(_output.Shape.Dimension);
+        _lossMarkup = new VectorInputNode(output.Shape.Dimension);
         _loss = new LossNode(output, _lossMarkup);
 
         var nodesList = new List<INode>{_loss};
         for(int i = 0; i < nodesList.Count(); i++)
         {
-            foreach(INode parameter in nodesList[i].Parameters)
+            INode node = nodesList[i];
+
+            foreach(INode parameter in node.Parameters)
             {
-                if(parameter is not DataNode)
+                if(parameter is not IDataNode)
                     nodesList.Add(parameter);
             }
         }
@@ -67,11 +70,11 @@ public class NeuralNetwork
             UpdateValues();
             Backpropagate();
 
-            foreach(DataNode parameter in _parameters)
+            foreach(IDataNode parameter in _parameters)
             {
-                Vector gradient = parameter.Gradient;
-                gradient.Scale(-1.0f * learningRate);
-                parameter.Value.Add(gradient);
+                float[] gradient = parameter.Gradient;
+                for(int j = 0; j < parameter.Data.Length; j++)
+                    parameter.Data[j] -= learningRate * gradient[j];
             }
         }
     }

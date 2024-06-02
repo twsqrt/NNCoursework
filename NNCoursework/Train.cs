@@ -57,26 +57,23 @@ public static class Train
         Vector[] data, markup;
         ReadData(out data, out markup);
 
-        var input = new DataNode(IMAGE_SIZE);
-        var matrixInput = new VectorToMatrixNode(input, 28, 28);
+        var input = new VectorInputNode(IMAGE_SIZE);
+        var inputMat = new VectorToMatrixNode(input, 28, 28);
 
-        var parameter0 = DataNode.CreateRandom(5 * 5 * 8);
-        var kernel = new VectorToTensor(parameter0, new TensorShape3D(5, 5, 8));
-        var conv = new Convolution2DNode(matrixInput, kernel, false);
+        var kernel = DataNodeFactory.CreateRandomTensor(new TensorShape3D(5, 5, 8));
+        var conv = new Convolution2DNode(inputMat, kernel, false);
         var maxpool = new MaxPool2DNode(conv, 2, 2);
         var convOutput = new TensorToVectorNode(maxpool);
         
-        var parameter1 = DataNode.CreateRandom(1152 * 100);
-        var reshape1 = new VectorToMatrixNode(parameter1, 100, 1152);
-        var layer1 = new LayerNode(reshape1, convOutput);
+        var weights1 = DataNodeFactory.CreateRandomMatrix(100, 1152);
+        var layer1 = new LayerNode(weights1, convOutput);
         var activation1 = ActivationNode.Create(layer1, ActivationType.LOGSIG);
 
-        var parameter2 = DataNode.CreateRandom(100 * 10);
-        var reshape2 = new VectorToMatrixNode(parameter2, 10, 100);
-        var layer2 = new LayerNode(reshape2, activation1);
+        var weights2 = DataNodeFactory.CreateRandomMatrix(10, 100);
+        var layer2 = new LayerNode(weights2, activation1);
         var activation2 = ActivationNode.Create(layer2, ActivationType.LOGSIG);
 
-        var network = new NeuralNetwork(input, new[] {parameter0, parameter1, parameter2}, activation2);
+        var network = new NeuralNetwork(input, new IDataNode[] {kernel, weights1, weights2}, activation2);
 
         var stopWatch = new Stopwatch();
         stopWatch.Start();

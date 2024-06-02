@@ -3,39 +3,20 @@ using NeuralNetworks.ComputationGraph;
 
 namespace NeuralNetworks;
 
-public class DataNode : Node<Vector>
+public class DataNode<T> : Node<T>, IDataNode
+    where T : ITensor
 {
-    private static readonly Random _random = new Random();
-
-    public Vector Gradient => ParentGradient;
-    public new Vector Value
-    {
-        get => _value;
-        set => _value = value;
-    }
-
-    public DataNode(int dimension)
-    : base(new TensorShape3D(dimension), new INode[0])
-    {
-        ParentGradient = Vector.CreateZero(dimension);
-    }
-   
-    public DataNode(Vector initData)
-    : this(initData.Dimension)
-    {
-        _value = initData;
-    }
-
-    public static DataNode CreateFromArray(float[] data)
-        => new DataNode(new Vector(data));
+    private readonly float[] _data;
     
-    public static DataNode CreateRandom(int dimension, float min = -1.0f, float max = 1.0f)
+    public float[] Data => _data;
+    public float[] Gradient => ParentGradient.Data;
+
+    public DataNode(float[] data, T dataWrapper, T parentGradient, TensorShape3D shape)
+    : base(shape, new INode[0])
     {
-        float[] data = Enumerable.Range(0, dimension)
-            .Select(_ => (float)_random.NextDouble() * (max - min) + min)
-            .ToArray();
-        
-        return CreateFromArray(data);
+        _data = data;
+        _value = dataWrapper;
+        ParentGradient = parentGradient;
     }
 
     public override void CalculateGradient() {}

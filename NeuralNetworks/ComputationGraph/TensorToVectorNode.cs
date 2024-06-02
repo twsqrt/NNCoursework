@@ -15,5 +15,5 @@ public class TensorToVectorNode : ReshapeNode<Tensor3D, Vector>
         => _input.ParentGradient = new Tensor3D(ParentGradient.Data, _input.Shape);
 
     public override void CalculateValue()
-        => _value = _input.Value.AsVector();
+        => _value = new Vector(_input.Value.Data);
 }

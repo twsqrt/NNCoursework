@@ -1,3 +1,6 @@
 ﻿namespace LinearAlgebra;
 
-public interface ITensor {}
+public interface ITensor
+{
+    float[] Data { get;}
+}

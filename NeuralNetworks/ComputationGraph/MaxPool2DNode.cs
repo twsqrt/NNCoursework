@@ -27,7 +27,7 @@ public class MaxPool2DNode : Node<Tensor3D>
         ParentGradient = Tensor3D.CreateZero(Shape);
     }
 
-    public void CalculateGradientForSlice(Matrix gradientSlice, int depth, Matrix result)
+    public void CalculateGradientForSlice(Tensor3DSlice gradientSlice, int depth, Tensor3DSlice result)
     {
         for(int i = 0; i < gradientSlice.Height; i++)
         for(int j = 0; j < gradientSlice.Width; j++)
@@ -53,8 +53,8 @@ public class MaxPool2DNode : Node<Tensor3D>
     {
         for(int i = 0; i < _child.Value.Shape.Depth; i++)
         {
-            Matrix childResultSlice = _child.Value.Slice(i);
-            Matrix resultSlice = _value.Slice(i);
+            Tensor3DSlice childResultSlice = _child.Value.Slice(i);
+            Tensor3DSlice resultSlice = _value.Slice(i);
             Matrix.MaxPool(childResultSlice, _kernelHeight, _kernelWidth, resultSlice);
         }
     }
