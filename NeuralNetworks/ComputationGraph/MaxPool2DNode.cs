@@ -32,10 +32,13 @@ public class MaxPool2DNode : Node<Tensor3D>
             for(int k = 0; k < _kernelHeight; k++)
             for(int l = 0; l < _kernelWidth; l++)
             {
-                if(_child.Value[i + k, j + l, depth] < _value[i, j, depth])
-                    result[i + k, j + l] = 0.0f;
+                int m = i * _kernelHeight + k;
+                int n = j * _kernelWidth + l;
+
+                if(_child.Value[m, n, depth] < _value[i, j, depth])
+                    result[m, n] = 0.0f;
                 else
-                    result[i + k, j + l] = gradientSlice[i, j];
+                    result[m, n] = gradientSlice[i, j];
             }
         }
     }
