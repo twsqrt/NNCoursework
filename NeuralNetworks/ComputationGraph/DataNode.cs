@@ -16,5 +16,6 @@ public class DataNode<T> : Node<T>, IDataNode
     }
 
     public override void CalculateGradient() {}
+
     public override void CalculateValue() {}
 }

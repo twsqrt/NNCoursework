@@ -24,6 +24,6 @@ public class LossNode : Node<Vector>
     public override void CalculateValue()
     {
         Vector.Difference(_output.Value, _markup.Value, _output.Gradient);
-        //_value = Vector.Create1D(_output.Gradient.LengthSquared);
+        _value = Vector.Create1D(_output.Gradient.LengthSquared);
     }
 }

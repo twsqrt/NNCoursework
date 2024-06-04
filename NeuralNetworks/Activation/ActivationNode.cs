@@ -32,8 +32,8 @@ public class ActivationNode<T> : Node<T>
         ),
         ActivationType.RELU => new ActivationNode<T>(
             child, 
-            x => MathF.Max(0.01f * x, x),
-            x => x > 0.0f ? 1.0f : 0.01f,
+            x => MathF.Max(0.0f, x),
+            x => x > 0.0f ? 1.0f : 0.0f,
             type
         ),
         ActivationType.LOGSIG => new ActivationNode<T>(

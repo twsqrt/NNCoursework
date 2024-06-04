@@ -2,12 +2,13 @@ using LinearAlgebra;
 
 namespace NeuralNetworks.ComputationGraph;
 
-public class AdditionNode : Node<Vector>
+public class AdditionNode<T> : Node<T>
+    where T : ITensor
 {
-    private readonly Node<Vector> _lhs;
-    private readonly Node<Vector> _rhs;
+    private readonly Node<T> _lhs;
+    private readonly Node<T> _rhs;
 
-    public AdditionNode(Node<Vector> lhs, Node<Vector> rhs) 
+    public AdditionNode(Node<T> lhs, Node<T> rhs) 
     : base(lhs.Shape, new INode[]{lhs, rhs})
     {
         if(lhs.Shape != rhs.Shape)
@@ -19,10 +20,13 @@ public class AdditionNode : Node<Vector>
 
     public override void CalculateGradient()
     {
-        _lhs.Gradient.CopyValuesFrom(Gradient);
+        _lhs.Gradient = TensorFactory.Create<T>(Gradient.Data, Shape);
         _rhs.Gradient = Gradient;
     }
 
     public override void CalculateValue()
-        => Vector.Addition(_lhs.Value, _rhs.Value, _value);
+    {
+        for(int i = 0; i < Shape.Dimension; i++)
+            _value.Data[i] = _lhs.Value.Data[i] + _rhs.Value.Data[i];
+    }
 }

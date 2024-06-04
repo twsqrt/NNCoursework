@@ -50,7 +50,7 @@ public class NeuralNetwork
             _nodes[i].CalculateGradient();
     }
 
-    public void Fit(Vector[] data, Vector[] markup, float learningRate, Action<int> progressCallback)
+    public void Fit(Vector[] data, Vector[] markup, float learningRate, float weigthDecay, Action<int> progressCallback)
     {
         int percentInteger = 0;
 
@@ -69,27 +69,33 @@ public class NeuralNetwork
             UpdateValues();
             Backpropagate();
 
+            if (float.IsNaN(_loss.Value[0]))
+                throw new ArgumentException();
+
             foreach(IDataNode parameter in _parameters)
             {
                 float[] gradient = parameter.GradientData;
                 for(int j = 0; j < parameter.Data.Length; j++)
-                    parameter.Data[j] -= learningRate * gradient[j];
+                {
+                    float old = parameter.Data[j];
+                    parameter.Data[j] -= learningRate * gradient[j] + learningRate * weigthDecay * old;
+                }
             }
         }
     }
 
-    public void Fit(Vector[] data, Vector[] markup, float learningRate, TextWriter log)
-        => Fit(data, markup, learningRate, percent => {
+    public void Fit(Vector[] data, Vector[] markup, float learningRate, float weigthDecay, TextWriter log)
+        => Fit(data, markup, learningRate, weigthDecay, percent => {
             if(percent % 5 == 0)
                 log.WriteLine($"Train progress: {percent}%");
         });
     
-    public void Fit(Vector[] data, Vector[] markup, float learningRate, int numberOfEpochs, TextWriter log)
+    public void Fit(Vector[] data, Vector[] markup, float learningRate, float weigthDecay, int numberOfEpochs, TextWriter log)
     {
         for(int i = 0; i < numberOfEpochs; i++)
         {
             log.WriteLine($"Epoch number: {i + 1}");
-            Fit(data, markup, learningRate, log);
+            Fit(data, markup, learningRate, weigthDecay, log);
         }
     }
 

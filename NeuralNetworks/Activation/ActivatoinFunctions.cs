@@ -6,8 +6,8 @@ internal static class ActivationFunctions
     private static readonly float _constantApproximationBorder = DECIMAL_PERCISION * MathF.Log(10.0f);
     public static float LogSigmoid(float x)
     {
-        if(MathF.Abs(x) > _constantApproximationBorder)
-            return x > 0.0f ? 1.0f : 0.0f;
+        // if(MathF.Abs(x) > _constantApproximationBorder)
+        //     return x > 0.0f ? 1.0f : 0.0f;
 
         return 1.0f / (1.0f + MathF.Exp(-x));
     }

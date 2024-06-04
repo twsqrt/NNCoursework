@@ -1,11 +1,11 @@
-﻿using System.Diagnostics;
-using System.Globalization;
+﻿using System.Globalization;
 using CsvHelper;
 using LinearAlgebra;
 using NeuralNetworks;
 using NeuralNetworks.Activation;
 using NeuralNetworks.ComputationGraph;
 using NeuralNetworks.Network;
+using NNCoursework;
 
 public static class Train
 {
@@ -31,7 +31,9 @@ public static class Train
                 if(percent + 1.0f > percentCount)
                 {
                     if(percentCount % 5 == 0)
-                        Console.WriteLine($"Read train data progress: {percentCount}%");
+                    {
+                        Console.WriteLine($"Reading data progress: {percentCount}%");
+                    }
 
                     percentCount++;
                 }
@@ -49,49 +51,54 @@ public static class Train
 
                 data[i] = new Vector(dataArray);
             }
+
+            Console.WriteLine();
         }
     }
 
-    public static NeuralNetwork TrainNetwork(int numberOfEpochs, float learningRate)
+    public static NeuralNetwork TrainNetwork(int numberOfEpochs, float learningRate, float weigthDecay)
     {
         Vector[] data, markup;
         ReadData(out data, out markup);
 
         var input = new VectorInputNode(IMAGE_SIZE);
         var inputMat = new ReshapeNode<Vector, Matrix>(input, new TensorShape(28, 28));
-
-        var kernel = new DataNode<Tensor3D>(new TensorShape(5, 5, 4));
+        var kernel = new DataNode<Tensor3D>(new TensorShape(11, 11, 8));
         var conv = new Convolution2DNode(inputMat, kernel, false);
-        var maxpool = new MaxPool2DNode(conv, 2, 2);
-        var convOutput = new ReshapeNode<Tensor3D, Vector>(maxpool, new TensorShape(576));
-        
-        var weights1 = new DataNode<Matrix>(new TensorShape(150, 576));
+        var maxPool = new MaxPool2DNode(conv, 2, 2);
+        var convOutput = new FlattenNode<Tensor3D>(maxPool);
+
+        var weights1 = new DataNode<Matrix>(new TensorShape(100, convOutput.Shape.Dimension));
         var layer1 = new LayerNode(weights1, convOutput);
-        var activation1 = ActivationNode<Vector>.Create(layer1, ActivationType.LOGSIG);
+        var bias1 = new DataNode<Vector>(new TensorShape(100));
+        var add1 = new AdditionNode<Vector>(layer1, bias1);
+        var act1 = ActivationNode<Vector>.Create(add1, ActivationType.LOGSIG); 
 
-        var weights2 = new DataNode<Matrix>(new TensorShape(50, 150));
-        var layer2 = new LayerNode(weights2, activation1);
-        var activation2 = ActivationNode<Vector>.Create(layer2, ActivationType.LOGSIG);
+        var weights2 = new DataNode<Matrix>(new TensorShape(30, 100));
+        var layer2 = new LayerNode(weights2, act1);
+        var bias2 = new DataNode<Vector>(new TensorShape(30));
+        var add2 = new AdditionNode<Vector>(layer2, bias2);
+        var act2 = ActivationNode<Vector>.Create(add2, ActivationType.LOGSIG);
 
-        var weights3 = new DataNode<Matrix>(new TensorShape(10, 50));
-        var layer3 = new LayerNode(weights3, activation2);
-        var activation3 = ActivationNode<Vector>.Create(layer3, ActivationType.LOGSIG);
+        var weights3 = new DataNode<Matrix>(new TensorShape(10, 30));
+        var layer3 = new LayerNode(weights3, act2);
+        var bias3 = new DataNode<Vector>(new TensorShape(10));
+        var add3 = new AdditionNode<Vector>(layer3, bias3);
+        var output = ActivationNode<Vector>.Create(add3, ActivationType.LOGSIG);
 
         var network = new NeuralNetwork(input, 
-            new IDataNode[] {kernel, weights1, weights2, weights3}, 
-            activation3);
+            new IDataNode[] {kernel, weights1, bias1, weights2, bias2, weights3, bias3}, 
+            output);
 
-        var stopWatch = new Stopwatch();
-        stopWatch.Start();
+        for(int i = 0; i < numberOfEpochs; i++)
+        {
+            Console.WriteLine($"Epoch: {i + 1} / {numberOfEpochs}");
 
-        network.Fit(data, markup, learningRate, numberOfEpochs, Console.Out);
+            network.Fit(data, markup, learningRate, weigthDecay, Console.Out);
 
-        stopWatch.Stop();
-        TimeSpan ts = stopWatch.Elapsed;
-        string elapsedTime = String.Format("{0:00}:{1:00}:{2:00}.{3:00}",
-            ts.Hours, ts.Minutes, ts.Seconds,
-            ts.Milliseconds / 10);
-        Console.WriteLine("Train Time: " + elapsedTime);
+            Console.WriteLine($"Train rate: {Test.NetworkRate(network, data, markup)}");
+            Console.WriteLine($"Test rate: {Test.NetworkRateOnTest(network)}");
+        }
 
         return network;
     }

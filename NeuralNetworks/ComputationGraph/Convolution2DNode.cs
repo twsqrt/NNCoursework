@@ -1,4 +1,5 @@
-﻿using LinearAlgebra;
+﻿using System.Diagnostics.CodeAnalysis;
+using LinearAlgebra;
 using NeuralNetworks.ComputationGraph;
 
 namespace NeuralNetworks;
@@ -38,7 +39,24 @@ public class Convolution2DNode : Node<Tensor3D>
 
         if(_shouldBackpropagateChild)
         {
-            //...
+            for(int i = 0; i < _child.Shape.Height; i++)
+            for(int j = 0; j < _child.Shape.Width; j++)
+            {
+                int kMin = Math.Max(i - _kernel.Shape.Height + 1, 0);
+                int kMax = Math.Min(_child.Shape.Height - _kernel.Shape.Height, i);
+
+                int lMin = Math.Max(j - _kernel.Shape.Width + 1, 0);
+                int lMax = Math.Min(_child.Shape.Width - _kernel.Shape.Width, j);
+
+                float sum = 0.0f;
+
+                for(int depth = 0; depth < _kernel.Shape.Depth; depth++)
+                for(int k = kMin; k <= kMax; k++)
+                for(int l = lMin; l <= lMax; l++)
+                    sum += Gradient[k, l, depth] * _kernel.Value[i - k, j - l, depth];
+
+                _child.Gradient[i, j] = sum;
+            }
         }
     }
 

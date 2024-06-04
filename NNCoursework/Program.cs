@@ -7,5 +7,7 @@ int numberOfEpochs = Convert.ToInt32(Console.ReadLine());
 Console.Write("Learning rate: ");
 float learningRate = (float) Convert.ToDouble(Console.ReadLine());
 
-NeuralNetwork network = Train.TrainNetwork(numberOfEpochs, learningRate);
-Test.TestNetwork(network);
+Console.Write("Weight decay: ");
+float weigthDecay = (float) Convert.ToDouble(Console.ReadLine());
+
+NeuralNetwork network = Train.TrainNetwork(numberOfEpochs, learningRate, weigthDecay);

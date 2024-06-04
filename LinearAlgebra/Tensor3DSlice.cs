@@ -1,5 +1,4 @@
-﻿using System.Reflection.Metadata;
-
+﻿
 namespace LinearAlgebra;
 
 public class Tensor3DSlice : IMatrix
