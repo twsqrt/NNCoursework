@@ -99,7 +99,6 @@ public static class Train
             Console.WriteLine($"Train rate: {Test.NetworkRate(network, data, markup)}");
             Console.WriteLine($"Test rate: {Test.NetworkRateOnTest(network)}");
         }
-
         return network;
     }
 }

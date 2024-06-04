@@ -1,5 +1,7 @@
-﻿using LinearAlgebra;
+﻿using System.Xml;
+using LinearAlgebra;
 using NeuralNetworks.ComputationGraph;
+using NeuralNetworks.ComputationGraph.Reader;
 
 
 namespace NeuralNetworks.Network;
@@ -104,5 +106,28 @@ public class NeuralNetwork
         _input.Value = input;
         UpdateValues();
         return _output.Value;
+    }
+
+    public void Export(BinaryWriter writer)
+        => _output.Export(writer);
+    
+    public static NeuralNetwork Import(BinaryReader reader)
+    {
+        VectorInputNode input = null;
+        var parameters = new List<IDataNode>();
+
+        var graphReader = new GraphReader(reader, (header, node) => {
+            if(header.NodeType == NodeType.DATA)
+                parameters.Add(node as IDataNode);
+            else if(header.NodeType == NodeType.INPUT)
+                input = node as VectorInputNode;
+        });
+
+        Node<Vector> output = graphReader.ReadNode<Vector>();
+
+        if(input is null)
+            throw new ArgumentException();
+        
+        return new NeuralNetwork(input, parameters.ToArray(), output);
     }
 }

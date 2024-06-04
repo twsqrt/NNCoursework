@@ -1,6 +1,6 @@
 ﻿namespace NeuralNetworks;
 
-public interface IDataNode
+public interface IDataNode : INode
 {
     float[] Data { get; }
     float[] GradientData { get;}

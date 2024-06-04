@@ -11,6 +11,12 @@ public class DataNode<T> : Node<T>, IDataNode
 
     public override NodeType Type => NodeType.DATA;
 
+    public DataNode(float[] data, TensorShape shape)
+    : base(shape, new INode[0])
+    {
+        _value = TensorFactory.Create<T>(data, shape);
+    }
+
     public DataNode(TensorShape shape)
     : base(shape, new INode[0])
     {

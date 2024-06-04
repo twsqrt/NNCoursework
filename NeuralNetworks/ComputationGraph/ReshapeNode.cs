@@ -24,6 +24,7 @@ public class ReshapeNode<TInput, TOutput> : Node<TOutput>
 
     protected override void WriteData(BinaryWriter writer)
     {
+        writer.Write((byte)_input.Value.Type);
         _input.Export(writer);
     }
 }
