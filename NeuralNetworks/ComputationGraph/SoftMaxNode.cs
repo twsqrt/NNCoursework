@@ -1,6 +1,4 @@
-﻿
-using System.Security.Cryptography;
-using LinearAlgebra;
+﻿using LinearAlgebra;
 
 namespace NeuralNetworks.ComputationGraph;
 
@@ -17,6 +15,8 @@ public class SoftMaxNode : Node<Vector>
 
         _childExponents = Vector.CreateZero(Shape.Dimension);
     }
+
+    public override NodeType Type => NodeType.SOFTMAX;
 
     public override void CalculateGradient()
     {
@@ -49,4 +49,7 @@ public class SoftMaxNode : Node<Vector>
         for(int i = 0; i < _value.Dimension; i++)
             _value[i] = _childExponents[i] / _childExponentsSum;
     }
+
+    protected override void WriteData(BinaryWriter writer)
+        => _child.Export(writer);
 }

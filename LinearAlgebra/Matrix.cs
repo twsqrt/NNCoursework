@@ -11,6 +11,8 @@ public class Matrix : ITensor, IMatrix
     public int Width => _width;
     public (int, int) Shape => (_height, _width);
 
+    public TensorType Type => TensorType.MATRIX;
+
     public float this[int i, int j] 
     {
         get => _data[i * _width + j];

@@ -20,6 +20,8 @@ public class Vector : ITensor
         }
     }
 
+    public TensorType Type => TensorType.VECTOR;
+
     public float this[int i]
     {
         get => _data[i];

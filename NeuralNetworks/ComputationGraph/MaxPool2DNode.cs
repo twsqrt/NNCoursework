@@ -9,6 +9,8 @@ public class MaxPool2DNode : Node<Tensor3D>
     private readonly int _kernelHeight; 
     private readonly int _kernelWidth;
 
+    public override NodeType Type => NodeType.MAXPOOL2D;
+
     public MaxPool2DNode(Node<Tensor3D> child, int kernelHeight, int kernelWidth)
     : base(new TensorShape(
         child.Shape.Height / kernelHeight, 
@@ -57,5 +59,12 @@ public class MaxPool2DNode : Node<Tensor3D>
             Tensor3DSlice resultSlice = _value.Slice(i);
             Matrix.MaxPool(childResultSlice, _kernelHeight, _kernelWidth, resultSlice);
         }
+    }
+
+    protected override void WriteData(BinaryWriter writer)
+    {
+        writer.Write(_kernelHeight);
+        writer.Write(_kernelHeight);
+        _child.Export(writer);
     }
 }

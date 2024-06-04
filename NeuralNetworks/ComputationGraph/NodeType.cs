@@ -2,9 +2,14 @@
 
 public enum NodeType
 {
-    PARAMETER,
-    ADDITION,
+    LOSS = 0,
+    DATA,
+    INPUT,
+    ADDITION = 16,
     LAYER,
-    ACTIVATION
-
+    ACTIVATION,
+    SOFTMAX,
+    RESHAPE = 32,
+    CONVOLUTION2D,
+    MAXPOOL2D,
 }

@@ -18,6 +18,8 @@ public class LossNode : Node<Vector>
         _markup = markup;
     }
 
+    public override NodeType Type => NodeType.LOSS;
+
     public override void CalculateGradient()
         => _output.Gradient.Scale(2.0f);
 
@@ -26,4 +28,7 @@ public class LossNode : Node<Vector>
         Vector.Difference(_output.Value, _markup.Value, _output.Gradient);
         _value = Vector.Create1D(_output.Gradient.LengthSquared);
     }
+
+    protected override void WriteData(BinaryWriter writer)
+        => throw new InvalidOperationException();
 }

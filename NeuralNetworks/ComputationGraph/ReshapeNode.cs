@@ -14,10 +14,16 @@ public class ReshapeNode<TInput, TOutput> : Node<TOutput>
         _input = input;
     }
 
+    public override NodeType Type => NodeType.RESHAPE;
+
     public override void CalculateGradient()
         => _input.Gradient = TensorFactory.Create<TInput>(Gradient.Data, _input.Shape);
 
     public override void CalculateValue()
         => _value = TensorFactory.Create<TOutput>(_input.Value.Data, Shape);
-    
+
+    protected override void WriteData(BinaryWriter writer)
+    {
+        _input.Export(writer);
+    }
 }

@@ -8,6 +8,8 @@ public class Tensor3D : ITensor
     public TensorShape Shape => _shape;
     public float[] Data => _data;
 
+    public TensorType Type => TensorType.TENSOR3D;
+
     public float this[int i] 
     {
         get => _data[i];

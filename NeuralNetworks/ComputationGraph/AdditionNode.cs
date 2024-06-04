@@ -18,6 +18,8 @@ public class AdditionNode<T> : Node<T>
         _rhs = rhs;
     }
 
+    public override NodeType Type => NodeType.ADDITION;
+
     public override void CalculateGradient()
     {
         _lhs.Gradient = TensorFactory.Create<T>(Gradient.Data, Shape);
@@ -28,5 +30,11 @@ public class AdditionNode<T> : Node<T>
     {
         for(int i = 0; i < Shape.Dimension; i++)
             _value.Data[i] = _lhs.Value.Data[i] + _rhs.Value.Data[i];
+    }
+
+    protected override void WriteData(BinaryWriter writer)
+    {
+        _lhs.Export(writer);
+        _rhs.Export(writer);
     }
 }

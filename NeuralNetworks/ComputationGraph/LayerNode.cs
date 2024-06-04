@@ -19,6 +19,8 @@ public class LayerNode : Node<Vector>
         _shouldBackpropagateChild = shouldBackpropagateChild;
     }
 
+    public override NodeType Type => NodeType.LAYER;
+
     public override void CalculateGradient()
     {
         for(int i = 0; i < _weights.Gradient.Height; i++)
@@ -31,4 +33,11 @@ public class LayerNode : Node<Vector>
 
     public override void CalculateValue()
         => Matrix.Multiply(_weights.Value, _child.Value, _value);
+
+    protected override void WriteData(BinaryWriter writer)
+    {
+        writer.Write(_shouldBackpropagateChild);
+        _child.Export(writer);
+        _weights.Export(writer);
+    }
 }

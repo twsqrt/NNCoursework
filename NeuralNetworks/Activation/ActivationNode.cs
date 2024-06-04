@@ -20,6 +20,8 @@ public class ActivationNode<T> : Node<T>
         _type = type;
     }
 
+    public override NodeType Type => NodeType.ACTIVATION;
+
     public static ActivationNode<T> Create(Node<T> child, ActivationType type)
     => type switch
     {
@@ -60,5 +62,11 @@ public class ActivationNode<T> : Node<T>
     {
         for(int i = 0; i < _child.Value.Data.Length; i++)
             _value.Data[i] = _function(_child.Value.Data[i]);
+    }
+
+    protected override void WriteData(BinaryWriter writer)
+    {
+        writer.Write((byte)_type);
+        _child.Export(writer);
     }
 }

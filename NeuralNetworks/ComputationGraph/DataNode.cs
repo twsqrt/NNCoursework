@@ -9,6 +9,8 @@ public class DataNode<T> : Node<T>, IDataNode
     public float[] Data => _value.Data;
     public float[] GradientData => Gradient.Data;
 
+    public override NodeType Type => NodeType.DATA;
+
     public DataNode(TensorShape shape)
     : base(shape, new INode[0])
     {
@@ -18,4 +20,12 @@ public class DataNode<T> : Node<T>, IDataNode
     public override void CalculateGradient() {}
 
     public override void CalculateValue() {}
+
+    protected override void WriteData(BinaryWriter writer)
+    {
+        writer.Write(Data.Length);
+
+        for(int i = 0; i < Data.Length; i++)
+            writer.Write(Data[i]);
+    }
 }

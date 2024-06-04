@@ -1,5 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using LinearAlgebra;
+﻿using LinearAlgebra;
 using NeuralNetworks.ComputationGraph;
 
 namespace NeuralNetworks;
@@ -11,6 +10,8 @@ public class Convolution2DNode : Node<Tensor3D>
     private readonly bool _shouldBackpropagateChild;
 
     public bool ShouldBackpropagateChild => _shouldBackpropagateChild;
+
+    public override NodeType Type => NodeType.CONVOLUTION2D;
 
     public Convolution2DNode(Node<Matrix> child, Node<Tensor3D> kernel, bool shouldBackpropagateChild = true)
     : base(new TensorShape(
@@ -68,5 +69,12 @@ public class Convolution2DNode : Node<Tensor3D>
             Tensor3DSlice resultSlice = _value.Slice(i);
             Matrix.Convolution(_child.Value, kernelSlice, resultSlice);
         }
+    }
+
+    protected override void WriteData(BinaryWriter writer)
+    {
+        writer.Write(_shouldBackpropagateChild);
+        _child.Export(writer);
+        _kernel.Export(writer);
     }
 }
